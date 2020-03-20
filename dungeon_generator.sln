@@ -3,9 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29911.84
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dungeon_generator_demo", "dungeon_generator\dungeon_generator_demo.csproj", "{44F85F0B-EAF3-4248-BE6B-A96F0600137B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dungeon_generator_demo", "dungeon_generator\dungeon_generator_demo.csproj", "{44F85F0B-EAF3-4248-BE6B-A96F0600137B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "procedural_dungeon_generator", "procedural_dungeon_generator\procedural_dungeon_generator.csproj", "{4F7FCAEF-2B0D-463F-B4AF-D21C26FA4C9B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "procedural_dungeon_generator", "procedural_dungeon_generator\procedural_dungeon_generator.csproj", "{4F7FCAEF-2B0D-463F-B4AF-D21C26FA4C9B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E2495384-89E9-4800-92D7-703632BD5C1A}"
+	ProjectSection(SolutionItems) = preProject
+		readme.md = readme.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
