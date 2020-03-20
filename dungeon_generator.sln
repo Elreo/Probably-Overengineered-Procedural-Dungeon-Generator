@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29911.84
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dungeon_generator_demo", "dungeon_generator\dungeon_generator_demo.csproj", "{44F85F0B-EAF3-4248-BE6B-A96F0600137B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "procedural_dungeon_generator", "procedural_dungeon_generator\procedural_dungeon_generator.csproj", "{4F7FCAEF-2B0D-463F-B4AF-D21C26FA4C9B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{44F85F0B-EAF3-4248-BE6B-A96F0600137B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44F85F0B-EAF3-4248-BE6B-A96F0600137B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44F85F0B-EAF3-4248-BE6B-A96F0600137B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44F85F0B-EAF3-4248-BE6B-A96F0600137B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F7FCAEF-2B0D-463F-B4AF-D21C26FA4C9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F7FCAEF-2B0D-463F-B4AF-D21C26FA4C9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F7FCAEF-2B0D-463F-B4AF-D21C26FA4C9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F7FCAEF-2B0D-463F-B4AF-D21C26FA4C9B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1C61D7AD-9CE9-48C7-A63C-82EDF319D9DB}
+	EndGlobalSection
+EndGlobal
