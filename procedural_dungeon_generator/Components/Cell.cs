@@ -17,6 +17,10 @@ namespace procedural_dungeon_generator.Components {
         public Point Location { get; }
 
         public Point Center {
+            get => new Point(2, 2) / Size;
+        }
+
+        public Point LocationCenter {
             get => Size / Location;
         }
 
