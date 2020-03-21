@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace procedural_dungeon_generator.Common {
-    class Point {
+    public class Point {
 
         public double X { get; }
         public double Y { get; }

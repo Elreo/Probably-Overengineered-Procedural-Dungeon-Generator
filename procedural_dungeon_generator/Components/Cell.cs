@@ -12,7 +12,7 @@ namespace procedural_dungeon_generator.Components {
     /// A single cell is a square-shaped 'room'. It is advised to generate these
     /// cells from CellGenerator class.
     /// </summary>
-    class Cell {
+    public class Cell {
         public Point Size { get; }
         public Point Location { get; }
 
@@ -24,16 +24,24 @@ namespace procedural_dungeon_generator.Components {
             get => Size / Location;
         }
 
-        public Cell(float sizeX, float sizeY) {
+        public Cell(double sizeX, double sizeY) {
             Size = new Point(sizeX, sizeY);
             Location = new Point(0, 0);
         }
 
-        public Cell(float sizeX, float sizeY, float locationX, float locationY) {
+        public Cell(double sizeX, double sizeY, double locationX, double locationY) {
             Size = new Point(sizeX, sizeY);
             Location = new Point(0, 0);
         }
 
+        public Cell(Point size) {
+            Size = size;
+        }
+
+        public Cell(Point size, Point location) {
+            Size = size;
+            Location = location;
+        }
         
     }
 }
