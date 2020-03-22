@@ -5,10 +5,10 @@ using System.Text;
 namespace procedural_dungeon_generator.Common {
     public class Point {
 
-        public double X { get; }
-        public double Y { get; }
+        public int X { get; }
+        public int Y { get; }
 
-        public Point(double x, double y) {
+        public Point(int x, int y) {
             X = x;
             Y = y;
         }

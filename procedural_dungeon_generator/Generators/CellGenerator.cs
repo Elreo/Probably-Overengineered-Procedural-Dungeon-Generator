@@ -20,24 +20,39 @@ namespace procedural_dungeon_generator.Generators {
         /// This is used to obtain random area inside of a circle.
         /// </summary>
         /// <returns></returns>
-        private Point GetRandomPointInCircle(double radius) {
+        private Point GetRandomPointInCircle(int radius) {
             double t = 2 * Math.PI * randomGenerator.NextDouble();
             double u = randomGenerator.NextDouble() + randomGenerator.NextDouble();
             double r = (u > 1) ? 2 - u : u;
-            return new Point(radius * r * Math.Cos(t), radius * r * Math.Sin(t));
+            return new Point(Convert.ToInt32(radius * r * Math.Cos(t)), 
+                Convert.ToInt32(radius * r * Math.Sin(t)));
         }
 
         /// <summary>
-        /// It generates a single random cell that can be used.
+        /// It generates a single random cell that can be used. The location is also
+        /// randomized as well.
         /// </summary>
         /// <param name="min">Minimum width/length</param>
         /// <param name="max">Maximum width/length</param>
         /// <returns>The resulting Cell type</returns>
-        public Cell GenerateCell(double min, double max) {
-            return GenerateCell(() => {
-                return new Point(randomGenerator.NextDouble() * (max - min) + min,
-                    randomGenerator.NextDouble() * (max - min) + min);
+        public Cell GenerateCell(int min, int max, int radius) {
+            Cell output = GenerateCell(() => {
+                return new Point(randomGenerator.Next(min, max),
+                    randomGenerator.Next(min, max));
             });
+            output.Location = GetRandomPointInCircle(radius);
+            return output;
+        }
+
+        public List<Cell> GenerateCellList(int amount, int min, int max, int radius) {
+            // TODO: Need to use Park-Miller Normal Distribution.
+            List<Cell> output = new List<Cell>();
+
+            for (int a = 0; a < amount; a++) {
+                output.Add(GenerateCell(min, max, radius));
+            }
+
+            return output;
         }
 
         /// <summary>
