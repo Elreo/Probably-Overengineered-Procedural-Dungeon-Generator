@@ -52,18 +52,18 @@ namespace dungeon_generator_demo {
                 });
             graph.DrawLines(pen,
                 new Point[] {
-                    new Point(cell.Location.X + 1250 - cell.Center.X, cell.Location.Y + 1250 - cell.Center.X),
-                    new Point(cell.Location.X + 1250 - cell.Center.X + cell.Size.X, cell.Location.Y + 1250 - cell.Center.X)
+                    new Point(cell.Location.X + 1250 - cell.Center.X, cell.Location.Y + 1250 - cell.Center.Y),
+                    new Point(cell.Location.X + 1250 - cell.Center.X + cell.Size.X, cell.Location.Y + 1250 - cell.Center.Y)
                 });
             graph.DrawLines(pen,
                 new Point[] {
-                    new Point(cell.Location.X + 1250 - cell.Center.X + cell.Size.X, cell.Location.Y + 1250 - cell.Center.X),
-                    new Point(cell.Location.X + 1250 - cell.Center.X + cell.Size.X, cell.Location.Y + 1250 - cell.Center.X + cell.Size.Y)
+                    new Point(cell.Location.X + 1250 - cell.Center.X + cell.Size.X, cell.Location.Y + 1250 - cell.Center.Y),
+                    new Point(cell.Location.X + 1250 - cell.Center.X + cell.Size.X, cell.Location.Y + 1250 - cell.Center.Y + cell.Size.Y)
                 });
             graph.DrawLines(pen,
                 new Point[] {
-                    new Point(cell.Location.X + 1250 - cell.Center.X, cell.Location.Y + 1250 - cell.Center.X + cell.Size.Y),
-                    new Point(cell.Location.X + 1250 - cell.Center.X + cell.Size.X, cell.Location.Y + 1250 - cell.Center.X + cell.Size.Y)
+                    new Point(cell.Location.X + 1250 - cell.Center.X, cell.Location.Y + 1250 - cell.Center.Y + cell.Size.Y),
+                    new Point(cell.Location.X + 1250 - cell.Center.X + cell.Size.X, cell.Location.Y + 1250 - cell.Center.Y + cell.Size.Y)
                 });
         }
     }

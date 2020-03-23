@@ -17,11 +17,11 @@ namespace procedural_dungeon_generator.Components {
         public Point Location { get; set; }
 
         public Point Center {
-            get => new Point(2, 2) / Size;
+            get => Size / new Point(2, 2);
         }
 
         public Point LocationCenter {
-            get => Size / Location;
+            get => (Size / new Point(2, 2)) + Location;
         }
 
         public Cell(int sizeX, int sizeY) {

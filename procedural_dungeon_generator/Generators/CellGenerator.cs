@@ -56,12 +56,13 @@ namespace procedural_dungeon_generator.Generators {
         }
 
         /// <summary>
+        /// Use this function to generate a cell of your preference.
+        /// </summary>
+        /// <remarks>
         /// This generates a cell, based from the information given in the function and
         /// input. It uses the function to calculate the size. The input is provided for
         /// calculation automation within the function.
-        /// 
-        /// Use this function to generate a cell of your preference.
-        /// </summary>
+        /// </remarks>
         /// <typeparam name="K">Key type for input</typeparam>
         /// <typeparam name="V">Value type for input</typeparam>
         /// <param name="function">Function that produces the point</param>
@@ -72,11 +73,12 @@ namespace procedural_dungeon_generator.Generators {
         }
 
         /// <summary>
-        /// This generates a cell, based from the information given in the function. It
-        /// uses the function to calculate the size.
-        /// 
         /// Use this function to generate a cell of your preference.
         /// </summary>
+        /// <remarks>
+        /// This generates a cell, based from the information given in the function. It
+        /// uses the function to calculate the size.
+        /// </remarks>
         /// <param name="function">Function that produces the point</param>
         /// <returns></returns>
         public Cell GenerateCell(Func<Point> function) {
