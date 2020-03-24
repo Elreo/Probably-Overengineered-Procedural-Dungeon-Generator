@@ -45,11 +45,18 @@ namespace procedural_dungeon_generator.Generators {
         }
 
         public List<Cell> GenerateCellList(int amount, int min, int max, int radius) {
-            // TODO: Need to use Park-Miller Normal Distribution.
+            // Note: Need to use Park-Miller Normal Distribution.
+            // Note 2: Changing this to Box-Mueller since I have no idea how to do NGD.
             List<Cell> output = new List<Cell>();
 
+            // TODO: This should be interchangable
+            double mean = 1;
+            double std = .32;
+
             for (int a = 0; a < amount; a++) {
-                output.Add(GenerateCell(min, max, radius));
+                double boxmueller = Formula.BoxMuellerND(mean, std);
+                if (boxmueller < 0.0) boxmueller *= -1;
+                output.Add(GenerateCell((int)(min * boxmueller), (int)(max * boxmueller), radius));
             }
 
             return output;
