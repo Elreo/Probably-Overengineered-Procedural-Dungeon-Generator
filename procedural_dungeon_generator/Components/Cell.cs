@@ -42,6 +42,17 @@ namespace procedural_dungeon_generator.Components {
             Size = size;
             Location = location;
         }
+
+        /// <summary>
+        /// Check if this cell collides with another cell, based on size and
+        /// location.
+        /// </summary>
+        /// <param name="cell"></param>
+        /// <returns></returns>
+        public bool CheckCollision(ref Cell cell) {
+            // TODO: Check for collision.
+            return false;
+        }
         
     }
 }
