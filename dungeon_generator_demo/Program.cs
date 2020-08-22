@@ -22,10 +22,10 @@ namespace dungeon_generator_demo {
             // Generate image with background
             Image image = new Bitmap(2500, 2500);
             Graphics graph = Graphics.FromImage(image);
-            graph.Clear(Color.Azure);
+            graph.Clear(Color.White);
 
             // Ready pen and draw the cells
-            Pen pen = new Pen(Brushes.Blue);
+            Pen pen = new Pen(Brushes.Black);
 
             foreach (Cell cell in cells) {
                 DrawCube(ref graph, ref pen, cell);

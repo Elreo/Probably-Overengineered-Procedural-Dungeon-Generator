@@ -3,7 +3,7 @@
 
 # How does it work?
 the check mark indicates that it has been implemented. It works by going through several steps;
-1. - [x] **Generate Rooms.** This is the most basic step. The room must be randomly generated and coupled tight in a circle.
+1. - [x] **Generate Rooms.** This is the most basic step. The room must be randomly generated and coupled tight in a circle. This one uses [Box-Mueller transform](https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform).
 2. - [ ] **Expand and spread the rooms.** The second step is splitting them all. The rooms that was previously overlapping will be split apart. This way, every room will be distributed around the area. The distance between each other can be adjusted.
 3. - [ ] **Selectively pick the main rooms.** This one depends with how it is implemented. Using [Normal Distribution](https://en.wikipedia.org/wiki/Normal_distribution), pick and use the ones that have certain sizes that the user wants.
 4. - [ ] **Distribute tunnels accordingly.** This one is self-explanatory. Add the tunnels, or hallways. Depends with how you want to do it.

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace procedural_dungeon_generator.Common {
+    /// <summary>
+    /// The point class.
+    /// </summary>
     public class Point {
 
         public int X { get; }

@@ -44,19 +44,31 @@ namespace procedural_dungeon_generator.Generators {
             return output;
         }
 
-        public List<Cell> GenerateCellList(int amount, int min, int max, int radius) {
+        /// <summary>
+        /// This is used to generate a list of cells. It should be noted that this one randomizes itself
+        /// using mean and standard deviation number, indicated in the inputs. By default, mean is 1 and 
+        /// stadard deviation is 0.32.
+        /// 
+        /// The cells location are generated in a shape of a circle. Use the locationRadius variable to adjust the
+        /// size of the circle radius. It should be noted that all the cells will be overlapping.
+        /// </summary>
+        /// <param name="amount"></param>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <param name="locationRadius"></param>
+        /// <returns></returns>
+        public List<Cell> GenerateCellList(int amount, int min, int max, int locationRadius, double mean = 1, double std = .32) {
             // Note: Need to use Park-Miller Normal Distribution.
             // Note 2: Changing this to Box-Mueller since I have no idea how to do NGD.
             List<Cell> output = new List<Cell>();
 
-            // TODO: This should be interchangable
-            double mean = 1;
-            double std = .32;
-
             for (int a = 0; a < amount; a++) {
-                double boxmueller = Formula.BoxMuellerND(mean, std);
-                if (boxmueller < 0.0) boxmueller *= -1;
-                output.Add(GenerateCell((int)(min * boxmueller), (int)(max * boxmueller), radius));
+                double boxmuller = Formula.BoxMullerMD(mean, std);
+                if (boxmuller < 0.0) boxmuller *= -1;
+                // output.Add(GenerateCell((int)(min * boxmueller), (int)(max * boxmueller), radius));
+                // We can't use the one above since it didn't add the box muller 
+                output.Add(new Cell(new Point(randomGenerator.Next((int) (min * boxmuller), (int) (max * boxmuller)),
+                    randomGenerator.Next((int) (min * boxmuller), (int) (max * boxmuller))), GetRandomPointInCircle(locationRadius), boxmuller));
             }
 
             return output;
