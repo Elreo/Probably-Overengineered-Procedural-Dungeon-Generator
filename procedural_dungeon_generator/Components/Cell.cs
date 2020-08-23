@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using procedural_dungeon_generator.Common;
+using procedural_dungeon_generator.Exceptions;
 
 namespace procedural_dungeon_generator.Components {
 
@@ -85,7 +86,7 @@ namespace procedural_dungeon_generator.Components {
         /// <param name=""></param>
         /// <param name=""></param>
         /// <returns></returns>
-        public double DistanceFrom(Cell other) {
+        public double RadiusDistanceFrom(Cell other) {
             return Math.Sqrt((double)(
                 Math.Pow(other.LocationCenter.X - LocationCenter.X, 2) + 
                 Math.Pow(other.LocationCenter.Y - LocationCenter.Y, 2)));

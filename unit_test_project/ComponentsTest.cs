@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using procedural_dungeon_generator.Components;
+using procedural_dungeon_generator.Common;
 
 namespace unit_test_project {
     [TestClass]
@@ -72,7 +73,7 @@ namespace unit_test_project {
             Cell cell1 = new Cell(0, 0, 0, 0);
             Cell cell2 = new Cell(0, 0, 6, 8);
 
-            Assert.AreEqual(10.0, cell1.DistanceFrom(cell2));
+            Assert.AreEqual(10.0, cell1.RadiusDistanceFrom(cell2));
         }
 
         [TestMethod]
@@ -83,7 +84,9 @@ namespace unit_test_project {
             //Assert.AreEqual(24.5, cell1.DistanceFrom(cell2));
 
             // Note: There's a floating point error here.
-            Assert.AreEqual(24.515301344262525, cell1.DistanceFrom(cell2));
+            Assert.AreEqual(24.515301344262525, cell1.RadiusDistanceFrom(cell2));
         }
+
+        
     }
 }
