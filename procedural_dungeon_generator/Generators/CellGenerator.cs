@@ -78,23 +78,6 @@ namespace procedural_dungeon_generator.Generators {
         /// Use this function to generate a cell of your preference.
         /// </summary>
         /// <remarks>
-        /// This generates a cell, based from the information given in the function and
-        /// input. It uses the function to calculate the size. The input is provided for
-        /// calculation automation within the function.
-        /// </remarks>
-        /// <typeparam name="K">Key type for input</typeparam>
-        /// <typeparam name="V">Value type for input</typeparam>
-        /// <param name="function">Function that produces the point</param>
-        /// <param name="input">Dictionary input for the function</param>
-        /// <returns></returns>
-        public Cell GenerateCell<K, V>(Func<Dictionary<K, V>, Point> function, Dictionary<K, V> input = null) {
-            return new Cell(function(input));
-        }
-
-        /// <summary>
-        /// Use this function to generate a cell of your preference.
-        /// </summary>
-        /// <remarks>
         /// This generates a cell, based from the information given in the function. It
         /// uses the function to calculate the size.
         /// </remarks>

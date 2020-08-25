@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 using procedural_dungeon_generator.Components;
 using procedural_dungeon_generator.Common;
@@ -66,7 +67,7 @@ namespace procedural_dungeon_generator.Adjusters {
         /// <returns></returns>
         public static List<Cell> FlockingSeparation(List<Cell> input, int iterationLimit) {
             //Point center = new Point(100, 100); // Center point of all cells.
-            List<Cell> output = input;
+            List<Cell> output = input.OrderBy(i => i.SizeDeterminant).Reverse().ToList();
             Point center = CellSum(output).Center;
             int movementFactor = 5;
             bool hasIntersections = true;
@@ -92,6 +93,7 @@ namespace procedural_dungeon_generator.Adjusters {
                             int yTransInner = centerC.Y - centerCPrime.Y;
 
                             // Add a vector to v proportional to the vector between the center of C and C'.
+                            // TODO: Make sure it's pushing towards the right direction, instead of just one.
                             movementVector.X += xTransInner < 0 ? -movementFactor : movementFactor;
                             movementVector.Y += yTransInner < 0 ? -movementFactor : movementFactor;
                         }
@@ -112,6 +114,24 @@ namespace procedural_dungeon_generator.Adjusters {
                 if (iteration >= iterationLimit) { throw new OutOfIterationException(iteration); }
             }
             return output;
+        }
+
+        /// <summary>
+        /// Use this function to get only specified amount of cells that you want. Typically, this
+        /// will sort the cell in descending order first based off the `SizeDeterminant` number, before
+        /// returning the one you want. This can be changed in the paramter.
+        /// 
+        /// It can throw `OverflowException` if the amount is higher than input's count.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static List<Cell> TrimCells(List<Cell> input, int amount, bool desc = true) {
+            if (amount > input.Count) throw new OverflowException("The given amount parameter is higher than input's count.");
+            if (desc) {
+                return input.OrderBy(i => i.SizeDeterminant).Reverse().ToList().GetRange(0, amount);
+            } else {
+                return input.OrderBy(i => i.SizeDeterminant).ToList().GetRange(0, amount);
+            }
         }
     }
 }

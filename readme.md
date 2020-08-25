@@ -5,7 +5,7 @@
 the check mark indicates that it has been implemented. It works by going through several steps;
 1. - [x] **Generate Rooms.** This is the most basic step. The room must be randomly generated and coupled tight in a circle. This one uses [Box-Mueller transform](https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform).
 2. - [x] **Expand and spread the rooms.** The second step is splitting them all. The rooms that was previously overlapping will be split apart. This way, every room will be distributed around the area. The distance between each other can be adjusted.
-3. - [ ] **Selectively pick the main rooms.** This one depends with how it is implemented. Using [Normal Distribution](https://en.wikipedia.org/wiki/Normal_distribution), pick and use the ones that have certain sizes that the user wants.
+3. - [x] **Selectively pick the main rooms.** This one depends with how it is implemented. The number used to generate the box will be used for this scenario. We'll pick and use the ones that have certain sizes that the user wants. In this case, the big ones.
 4. - [ ] **Distribute tunnels accordingly.** This one is self-explanatory. Add the tunnels, or hallways. Depends with how you want to do it.
 	1. - [ ] **Connect all rooms.** We use [Delaunay Triangulation](https://en.wikipedia.org/wiki/Delaunay_triangulation) to create the tunnels. This way, all the rooms are connected with each other with the tunnels.
 	2. - [ ] **Ensure it does not generate too many tunnels.** We need to make sure that we don't use all the tunnels that exist there. We cut them off with [Minimum Spanning Tree](https://en.wikipedia.org/wiki/Minimum_spanning_tree) to make sure it does not use all the tunnels, but every room are still connected with each other.

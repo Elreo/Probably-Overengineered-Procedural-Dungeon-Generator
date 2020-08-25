@@ -17,8 +17,12 @@ namespace dungeon_generator_demo {
 
             Console.WriteLine("Generating dungeons with 150 rooms ...");
 
-            // Step 1
-            List<Cell> cells = cellGenerator.GenerateCellList(150, 50, 250, 750);
+            /**
+             * =========================================================================
+             *  STEP 1
+             * =========================================================================
+             */
+            List<Cell> cells = cellGenerator.GenerateCellList(150, 50, 250, 750, 1, 0.2);
 
             // Draw first step
             Console.WriteLine("Drawing first step to image ...");
@@ -47,7 +51,11 @@ namespace dungeon_generator_demo {
 
             Console.WriteLine("Image has been saved as \"step1.png\"");
 
-            // Step 2
+            /**
+             * =========================================================================
+             *  STEP 2
+             * =========================================================================
+             */
             //List<Cell> rearrangedCells = CellDistributor.FlockingSeparation(cells, cells.Count * 2);
             List<Cell> rearrangedCells;
 
@@ -58,7 +66,8 @@ namespace dungeon_generator_demo {
                 } catch (OutOfIterationException exception) {
                     Console.WriteLine("WARNING: Separation iteration has been exhausted. " +
                         "Iteration limit is " + exception.IterationNumber + ". Retrying with new dataset ...\n");
-                    cells = cellGenerator.GenerateCellList(150, 50, 250, 750);
+                    //cells = cellGenerator.GenerateCellList(150, 50, 250, 750);
+                    cells = cellGenerator.GenerateCellList(150, 50, 250, 750, 1, 0.2);
                 }
             }
 
@@ -85,6 +94,38 @@ namespace dungeon_generator_demo {
             image.Save("step2.png", System.Drawing.Imaging.ImageFormat.Png);
 
             Console.WriteLine("Image has been saved as \"step2.png\"");
+
+            /**
+             * =========================================================================
+             *  STEP 3
+             * =========================================================================
+             */
+            //List<Cell> rearrangedCells = CellDistributor.FlockingSeparation(cells, cells.Count * 2);
+            List<Cell> selectedCells = CellDistributor.TrimCells(rearrangedCells, 25);
+
+            // Draw second step
+            Console.WriteLine("Drawing third step to image ...");
+
+            // Generate image with background
+            image = new Bitmap(5000, 5000);
+            graph = Graphics.FromImage(image);
+            graph.Clear(Color.White);
+
+            //foreach (Cell cell in cells) {
+            foreach (Cell cell in selectedCells) {
+                DrawCube(ref graph, ref pen, cell);
+            }
+
+            Console.WriteLine("Image drawn. Saving ...");
+
+            if (File.Exists("step3.png")) {
+                File.Delete("step3.png");
+                Console.WriteLine("Previous save file has been deleted.");
+            }
+
+            image.Save("step3.png", System.Drawing.Imaging.ImageFormat.Png);
+
+            Console.WriteLine("Image has been saved as \"step3.png\"");
         }
 
         static void DrawCube(ref Graphics graph, ref Pen pen, Cell cell) {
