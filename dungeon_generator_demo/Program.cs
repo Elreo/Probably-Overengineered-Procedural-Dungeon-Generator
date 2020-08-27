@@ -181,9 +181,6 @@ namespace dungeon_generator_demo {
              *  STEP 4.2
              * =========================================================================
              */
-            //TunnelGenerator tunnelGenerator = new TunnelGenerator(selectedCells);
-            //tunnelGenerator.DelaunayTriangulation();
-            //List<Cell> triangulatedCells = tunnelGenerator.ExportCells();
             tunnelGenerator.RemoveOverlapping();
             triangulatedCells = tunnelGenerator.ExportCells();
 

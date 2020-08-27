@@ -8,6 +8,7 @@ using procedural_dungeon_generator.Common;
 using procedural_dungeon_generator.Components;
 using procedural_dungeon_generator.DelaunayTriangulation;
 using procedural_dungeon_generator.DelaunayTriangulation.Interfaces;
+using procedural_dungeon_generator.Tunneler;
 
 namespace procedural_dungeon_generator.Generators {
     /// <summary>
@@ -74,10 +75,14 @@ namespace procedural_dungeon_generator.Generators {
                 // Check for overlapping cells.
                 foreach (Cell unrelatedCell in cells) {
                     // Check for its own and other connected cells.
-                    if (unrelatedCell == cell || cell.ConnectedCell.Contains(unrelatedCell.GetHashCode())) continue;
-                    
+                    //if (unrelatedCell == cell || cell.ConnectedCell.Contains(unrelatedCell.GetHashCode())) continue;
+                    if (unrelatedCell == cell) continue;
+
                     // Iterate through the connected cells.
                     foreach (Cell pointB in PointBs) {
+                        // You can't check your own.
+                        if (unrelatedCell == pointB) break;
+
                         // Create the path points.
                         List<Point> pathPoints = CreatePathPoints(pointA, pointB.LocationCenter, 
                             (int)pointA.Distance(pointB.LocationCenter));
@@ -121,6 +126,15 @@ namespace procedural_dungeon_generator.Generators {
                 outputPoints.Add(new Point((int)(a.X + i * d * Math.Cos(fi)), (int)(a.Y + i * d * Math.Sin(fi))));
             }
             return outputPoints;
+        }
+
+        /// <summary>
+        /// This method is used to generate the actual tunnels. This one relies to the cell relationships to
+        /// generate the tunnels.
+        /// </summary>
+        /// <returns></returns>
+        public List<Tunnel> GenerateTunnel() {
+            return new CellWallDigger(cells).SimpleTunnels();
         }
 
         /// <summary>

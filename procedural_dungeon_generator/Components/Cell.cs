@@ -37,7 +37,7 @@ namespace procedural_dungeon_generator.Components {
         /// Typically, they are connected via tunnels.
         /// </summary>
         //public List<int> ConnectedCell { get; set; }
-        public List<int> ConnectedCell { get; set; }
+        public HashSet<int> ConnectedCell { get; set; }
 
         public Cell(int sizeX, int sizeY, int locationX, int locationY, double sizeDeterminant) : 
             this(new Point(sizeX, sizeY), new Point(locationX, locationY), sizeDeterminant) { }
@@ -58,7 +58,7 @@ namespace procedural_dungeon_generator.Components {
             Size = size;
             Location = location;
             SizeDeterminant = sizeDeterminant;
-            ConnectedCell = new List<int>();
+            ConnectedCell = new HashSet<int>();
         }
 
         /// <summary>
