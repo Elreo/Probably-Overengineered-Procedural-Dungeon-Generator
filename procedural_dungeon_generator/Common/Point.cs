@@ -55,8 +55,16 @@ namespace procedural_dungeon_generator.Common {
         public static Point operator -(Point a, Point b) => new Point(a.X - b.X, a.Y - b.Y);
         public static Point operator *(Point a, Point b) => new Point(a.X * b.X, a.Y * b.Y);
         public static Point operator /(Point a, Point b) => new Point(a.X / b.X, a.Y / b.Y);
-        public static bool operator ==(Point a, Point b) => a.X == b.X && a.Y == b.Y;
-        public static bool operator !=(Point a, Point b) => a.X != b.X && a.Y != b.Y;
         public override string ToString() => $"X: {X} / {Y}";
+
+        public override int GetHashCode() {
+            return X ^ Y;
+        }
+
+        public override bool Equals(object obj) {
+            if (obj.GetType() != GetType()) return false;
+            Point point = obj as Point;
+            return X == point.X && Y == point.Y;
+        }
     }
 }

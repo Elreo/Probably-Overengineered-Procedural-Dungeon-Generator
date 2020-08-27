@@ -10,6 +10,9 @@ using procedural_dungeon_generator.Exceptions;
 
 namespace dungeon_generator_demo {
     class Program {
+        private static int canvasSizeX = 5000;
+        private static int canvasSizeY = 5000;
+
         static void Main(string[] args) {
             Console.WriteLine("Initializing ...");
 
@@ -28,7 +31,7 @@ namespace dungeon_generator_demo {
             Console.WriteLine("Drawing first step to image ...");
 
             // Generate image with background
-            Image image = new Bitmap(5000, 5000);
+            Image image = new Bitmap(canvasSizeX, canvasSizeY);
             Graphics graph = Graphics.FromImage(image);
             graph.Clear(Color.White);
 
@@ -37,7 +40,7 @@ namespace dungeon_generator_demo {
 
             //foreach (Cell cell in cells) {
             foreach (Cell cell in cells) {
-                DrawCube(ref graph, ref pen, cell);
+                DrawCube(ref graph, ref pen, cell, image.Width, image.Height);
             }
 
             Console.WriteLine("Image drawn. Saving ...");
@@ -75,13 +78,13 @@ namespace dungeon_generator_demo {
             Console.WriteLine("Drawing second step to image ...");
 
             // Generate image with background
-            image = new Bitmap(5000, 5000);
+            image = new Bitmap(canvasSizeX, canvasSizeY);
             graph = Graphics.FromImage(image);
             graph.Clear(Color.White);
 
             //foreach (Cell cell in cells) {
             foreach (Cell cell in rearrangedCells) {
-                DrawCube(ref graph, ref pen, cell);
+                DrawCube(ref graph, ref pen, cell, image.Width, image.Height);
             }
 
             Console.WriteLine("Image drawn. Saving ...");
@@ -100,20 +103,19 @@ namespace dungeon_generator_demo {
              *  STEP 3
              * =========================================================================
              */
-            //List<Cell> rearrangedCells = CellDistributor.FlockingSeparation(cells, cells.Count * 2);
             List<Cell> selectedCells = CellDistributor.TrimCells(rearrangedCells, 25);
 
             // Draw second step
             Console.WriteLine("Drawing third step to image ...");
 
             // Generate image with background
-            image = new Bitmap(5000, 5000);
+            image = new Bitmap(canvasSizeX, canvasSizeY);
             graph = Graphics.FromImage(image);
             graph.Clear(Color.White);
 
             //foreach (Cell cell in cells) {
             foreach (Cell cell in selectedCells) {
-                DrawCube(ref graph, ref pen, cell);
+                DrawCube(ref graph, ref pen, cell, image.Width, image.Height);
             }
 
             Console.WriteLine("Image drawn. Saving ...");
@@ -126,29 +128,90 @@ namespace dungeon_generator_demo {
             image.Save("step3.png", System.Drawing.Imaging.ImageFormat.Png);
 
             Console.WriteLine("Image has been saved as \"step3.png\"");
+
+            /**
+             * =========================================================================
+             *  STEP 4
+             * =========================================================================
+             */
+            //List<Cell> rearrangedCells = CellDistributor.FlockingSeparation(cells, cells.Count * 2);
+            //List<Cell> selectedCells = CellDistributor.TrimCells(rearrangedCells, 25);
+            TunnelGenerator tunnelGenerator = new TunnelGenerator(selectedCells);
+            tunnelGenerator.TriangulatePaths();
+            List<Cell> triangulatedCells = tunnelGenerator.ExportCells();
+
+            // Draw fourth step
+            Console.WriteLine("Drawing fourth step to image ...");
+
+            // Generate image with background
+            image = new Bitmap(canvasSizeX, canvasSizeY);
+            graph = Graphics.FromImage(image);
+            graph.Clear(Color.White);
+
+            // Draw the boxes.
+            foreach (Cell cell in selectedCells) {
+                DrawCube(ref graph, ref pen, cell, image.Width, image.Height);
+            }
+
+            // Change pen color to difference the lines.
+            pen = new Pen(Brushes.Red);
+
+            // TODO: There has to be a better way to do this.
+            foreach (Cell cell in triangulatedCells) {
+                // Iterate the hash code.
+                foreach (int hashcode in cell.ConnectedCell) {
+                    // Get the cells that's connected to it.
+                    foreach (Cell innerCell in triangulatedCells) {
+                        // If found, draw it and break out of the loop.
+                        if (hashcode == innerCell.GetHashCode()) {
+                            DrawLineFromCells(ref graph, ref pen, cell, innerCell, canvasSizeX, canvasSizeY);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            Console.WriteLine("Image drawn. Saving ...");
+
+            if (File.Exists("step4.png")) {
+                File.Delete("step4.png");
+                Console.WriteLine("Previous save file has been deleted.");
+            }
+
+            image.Save("step4.png", System.Drawing.Imaging.ImageFormat.Png);
+
+            Console.WriteLine("Image has been saved as \"step4.png\"");
         }
 
-        static void DrawCube(ref Graphics graph, ref Pen pen, Cell cell) {
+        static void DrawLineFromCells(ref Graphics graph, ref Pen pen, Cell cellA, Cell cellB, int canvasSizeX, int canvasSizeY) {
+            graph.DrawLines(pen,
+                new Point[] {
+                    new Point(cellA.LocationCenter.X, cellA.LocationCenter.Y),
+                    new Point(cellB.LocationCenter.X, cellB.LocationCenter.Y)
+                });
+        }
+
+        static void DrawCube(ref Graphics graph, ref Pen pen, Cell cell, int canvasSizeX, int canvasSizeY) {
             // TODO: There must be a better way to draw this.
             graph.DrawLines(pen,
                 new Point[] {
-                    new Point(cell.Location.X + 1250 - cell.Center.X, cell.Location.Y + 1250 - cell.Center.Y),
-                    new Point(cell.Location.X + 1250 - cell.Center.X, cell.Location.Y + 1250 - cell.Center.Y + cell.Size.Y)
+                    new Point(cell.Location.X + (canvasSizeX / 2) - cell.Center.X, cell.Location.Y + (canvasSizeY / 2) - cell.Center.Y),
+                    new Point(cell.Location.X + (canvasSizeX / 2) - cell.Center.X, cell.Location.Y + (canvasSizeY / 2) - cell.Center.Y + cell.Size.Y)
                 });
             graph.DrawLines(pen,
                 new Point[] {
-                    new Point(cell.Location.X + 1250 - cell.Center.X, cell.Location.Y + 1250 - cell.Center.Y),
-                    new Point(cell.Location.X + 1250 - cell.Center.X + cell.Size.X, cell.Location.Y + 1250 - cell.Center.Y)
+                    new Point(cell.Location.X + (canvasSizeX / 2) - cell.Center.X, cell.Location.Y + (canvasSizeY / 2) - cell.Center.Y),
+                    new Point(cell.Location.X + (canvasSizeX / 2) - cell.Center.X + cell.Size.X, cell.Location.Y + (canvasSizeY / 2) - cell.Center.Y)
                 });
             graph.DrawLines(pen,
                 new Point[] {
-                    new Point(cell.Location.X + 1250 - cell.Center.X + cell.Size.X, cell.Location.Y + 1250 - cell.Center.Y),
-                    new Point(cell.Location.X + 1250 - cell.Center.X + cell.Size.X, cell.Location.Y + 1250 - cell.Center.Y + cell.Size.Y)
+                    new Point(cell.Location.X + (canvasSizeX / 2) - cell.Center.X + cell.Size.X, cell.Location.Y + (canvasSizeY / 2) - cell.Center.Y),
+                    new Point(cell.Location.X + (canvasSizeX / 2) - cell.Center.X + cell.Size.X, cell.Location.Y + (canvasSizeY / 2) - cell.Center.Y + cell.Size.Y)
                 });
             graph.DrawLines(pen,
                 new Point[] {
-                    new Point(cell.Location.X + 1250 - cell.Center.X, cell.Location.Y + 1250 - cell.Center.Y + cell.Size.Y),
-                    new Point(cell.Location.X + 1250 - cell.Center.X + cell.Size.X, cell.Location.Y + 1250 - cell.Center.Y + cell.Size.Y)
+                    new Point(cell.Location.X + (canvasSizeX / 2) - cell.Center.X, cell.Location.Y + (canvasSizeY / 2) - cell.Center.Y + cell.Size.Y),
+                    new Point(cell.Location.X + (canvasSizeX / 2) - cell.Center.X + cell.Size.X, cell.Location.Y + (canvasSizeY / 2) - cell.Center.Y + cell.Size.Y)
                 });
         }
     }

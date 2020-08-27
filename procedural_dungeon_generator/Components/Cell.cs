@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text;
 
 using procedural_dungeon_generator.Common;
@@ -14,6 +15,7 @@ namespace procedural_dungeon_generator.Components {
     /// cells from CellGenerator class.
     /// </summary>
     public class Cell {
+
         public Point Size { get; }
         public Point Location { get; set; }
 
@@ -27,46 +29,32 @@ namespace procedural_dungeon_generator.Components {
             get => (Size / new Point(2, 2)) + Location;
         }
 
-        public Cell(int sizeX, int sizeY) {
-            Size = new Point(sizeX, sizeY);
-            Location = new Point(0, 0);
-            SizeDeterminant = 0;
-        }
+        /// <summary>
+        /// This list contains information about which other cells it is connected to.
+        /// Typically, they are connected via tunnels.
+        /// </summary>
+        public List<int> ConnectedCell { get; set; }
 
-        public Cell(int sizeX, int sizeY, int locationX, int locationY) {
-            Size = new Point(sizeX, sizeY);
-            Location = new Point(locationX, locationY);
-            SizeDeterminant = 0;
-        }
+        public Cell(int sizeX, int sizeY, int locationX, int locationY, double sizeDeterminant) : 
+            this(new Point(sizeX, sizeY), new Point(locationX, locationY), sizeDeterminant) { }
 
-        public Cell(int sizeX, int sizeY, int locationX, int locationY, double sizeDeterminant) {
-            Size = new Point(sizeX, sizeY);
-            Location = new Point(locationX, locationY);
-            SizeDeterminant = sizeDeterminant;
-        }
+        public Cell(int sizeX, int sizeY, int locationX, int locationY) : 
+            this(sizeX, sizeY, locationX, locationY, 0) { }
 
-        public Cell(Point size) {
-            Size = size;
-            Location = new Point(0, 0);
-            SizeDeterminant = 0;
-        }
+        public Cell(Point size) : 
+            this(size, new Point(0, 0), 0) { }
 
-        public Cell(Point size, double sizeDeterminant) {
-            Size = size;
-            Location = new Point(0, 0);
-            SizeDeterminant = sizeDeterminant;
-        }
+        public Cell(Point size, double sizeDeterminant) : 
+            this(size, new Point(0, 0), sizeDeterminant) { }
 
-        public Cell(Point size, Point location) {
-            Size = size;
-            Location = location;
-            SizeDeterminant = 0;
-        }
+        public Cell(Point size, Point location) : 
+            this(size, location, 0) { }
 
         public Cell(Point size, Point location, double sizeDeterminant) {
             Size = size;
             Location = location;
             SizeDeterminant = sizeDeterminant;
+            ConnectedCell = new List<int>();
         }
 
         /// <summary>
@@ -90,6 +78,10 @@ namespace procedural_dungeon_generator.Components {
             return Math.Sqrt((double)(
                 Math.Pow(other.LocationCenter.X - LocationCenter.X, 2) + 
                 Math.Pow(other.LocationCenter.Y - LocationCenter.Y, 2)));
+        }
+
+        public override int GetHashCode() {
+            return Size.GetHashCode() ^ Location.GetHashCode() ^ (int)(SizeDeterminant * 1000);
         }
     }
 }

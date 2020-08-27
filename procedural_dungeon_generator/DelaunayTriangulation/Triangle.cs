@@ -19,7 +19,7 @@ namespace procedural_dungeon_generator.DelaunayTriangulation {
             get {
                 HashSet<Triangle> neighbors = new HashSet<Triangle>();
                 foreach (DTPoint vertex in Vertices) {
-                    IEnumerable<Triangle> trianglesWithSharedEdge = vertex.AdjactmentTriangles.Where(
+                    IEnumerable<Triangle> trianglesWithSharedEdge = vertex.AdjacentTriangles.Where(
                         o => o != this && SharesEdgeWith(o));
                     neighbors.UnionWith(trianglesWithSharedEdge);
                 }
@@ -28,6 +28,8 @@ namespace procedural_dungeon_generator.DelaunayTriangulation {
         }
 
         public Triangle(DTPoint point1, DTPoint point2, DTPoint point3) {
+            Vertices = new DTPoint[3];
+
             // This is done to ensure that the given points are not equal. While it
             // may not happen in this use case, it's best to keep this here.
             if (point1 == point2 || point1 == point3 || point2 == point3) {
@@ -44,9 +46,9 @@ namespace procedural_dungeon_generator.DelaunayTriangulation {
                 Vertices[2] = point2;
             }
 
-            Vertices[0].AdjactmentTriangles.Add(this);
-            Vertices[1].AdjactmentTriangles.Add(this);
-            Vertices[2].AdjactmentTriangles.Add(this);
+            Vertices[0].AdjacentTriangles.Add(this);
+            Vertices[1].AdjacentTriangles.Add(this);
+            Vertices[2].AdjacentTriangles.Add(this);
 
             UpdateCircumcircle();
         }
@@ -85,6 +87,15 @@ namespace procedural_dungeon_generator.DelaunayTriangulation {
         public bool IsPointInsideCircumcircle(DTPoint point) {
             return ((point.X - Circumcenter.X) * (point.X - Circumcenter.X) + 
                 (point.Y - Circumcenter.Y) * (point.Y - Circumcenter.Y)) < RadiusSquared;
+        }
+
+        public override bool Equals(object obj) {
+            //return base.Equals(obj);
+            if (obj.GetType() != GetType()) return false;
+            Triangle tri = obj as Triangle;
+            return Vertices[0] == tri.Vertices[0] && Vertices[1] == tri.Vertices[1] && Vertices[2] == tri.Vertices[2] ||
+                Vertices[0] == tri.Vertices[1] && Vertices[1] == tri.Vertices[2] && Vertices[2] == tri.Vertices[0] ||
+                Vertices[0] == tri.Vertices[2] && Vertices[1] == tri.Vertices[0] && Vertices[2] == tri.Vertices[1];
         }
     }
 }

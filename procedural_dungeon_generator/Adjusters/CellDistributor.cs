@@ -68,7 +68,8 @@ namespace procedural_dungeon_generator.Adjusters {
         public static List<Cell> FlockingSeparation(List<Cell> input, int iterationLimit) {
             //Point center = new Point(100, 100); // Center point of all cells.
             List<Cell> output = input.OrderBy(i => i.SizeDeterminant).Reverse().ToList();
-            Point center = CellSum(output).Center;
+            //Point center = CellSum(output).Center;
+            Point center = CellSum(output).LocationCenter;
             int movementFactor = 5;
             bool hasIntersections = true;
 
@@ -83,11 +84,13 @@ namespace procedural_dungeon_generator.Adjusters {
                     List<Cell> intersectingCells = FindIntersections(cell, output);
                     if (intersectingCells.Count != 0) {
                         Point movementVector = new Point(0, 0);
-                        Point centerC = cell.Center;
+                        //Point centerC = cell.Center;
+                        Point centerC = cell.LocationCenter;
 
                         // For each cell that overlaps each other.
                         foreach (Cell cPrime in intersectingCells) {
-                            Point centerCPrime = cPrime.Center;
+                            //Point centerCPrime = cPrime.Center;
+                            Point centerCPrime = cPrime.LocationCenter;
 
                             int xTransInner = centerC.X - centerCPrime.X;
                             int yTransInner = centerC.Y - centerCPrime.Y;
