@@ -12,7 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "dungeon_generator_demo", "dungeon_generator_demo\dungeon_generator_demo.csproj", "{B4F2DB17-9B59-4E1E-AC66-8B15AFD42123}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "unit_test_project", "unit_test_project\unit_test_project.csproj", "{AF97017D-AC08-48C4-80B6-2CB9E0A49911}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "unit_test_project", "unit_test_project\unit_test_project.csproj", "{AF97017D-AC08-48C4-80B6-2CB9E0A49911}"
 	ProjectSection(ProjectDependencies) = postProject
 		{4F7FCAEF-2B0D-463F-B4AF-D21C26FA4C9B} = {4F7FCAEF-2B0D-463F-B4AF-D21C26FA4C9B}
 	EndProjectSection
