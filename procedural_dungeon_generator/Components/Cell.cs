@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -33,6 +34,7 @@ namespace procedural_dungeon_generator.Components {
         /// This list contains information about which other cells it is connected to.
         /// Typically, they are connected via tunnels.
         /// </summary>
+        //public List<int> ConnectedCell { get; set; }
         public List<int> ConnectedCell { get; set; }
 
         public Cell(int sizeX, int sizeY, int locationX, int locationY, double sizeDeterminant) : 
@@ -82,6 +84,11 @@ namespace procedural_dungeon_generator.Components {
 
         public override int GetHashCode() {
             return Size.GetHashCode() ^ Location.GetHashCode() ^ (int)(SizeDeterminant * 1000);
+        }
+
+        public override string ToString() {
+            return $"HashCode: {GetHashCode()}, LocationCenter: {LocationCenter}, " +
+                $"ConnectedCell: {{ { string.Join(", ", ConnectedCell.Select(n => n.ToString()).ToArray()) } }}";
         }
     }
 }

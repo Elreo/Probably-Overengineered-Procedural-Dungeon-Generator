@@ -4,4 +4,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Generators\TunnelGenerator.cs~RF14ce7ff.TMP" />
+  </ItemGroup>
+
 </Project>

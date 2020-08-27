@@ -7,6 +7,10 @@ using procedural_dungeon_generator.Generators;
 using procedural_dungeon_generator.Components;
 using procedural_dungeon_generator.Adjusters;
 using procedural_dungeon_generator.Exceptions;
+using procedural_dungeon_generator.DelaunayTriangulation;
+using System.Linq;
+
+using procedural_dungeon_generator.DelaunayTriangulation.Interfaces;
 
 namespace dungeon_generator_demo {
     class Program {
@@ -137,7 +141,7 @@ namespace dungeon_generator_demo {
             //List<Cell> rearrangedCells = CellDistributor.FlockingSeparation(cells, cells.Count * 2);
             //List<Cell> selectedCells = CellDistributor.TrimCells(rearrangedCells, 25);
             TunnelGenerator tunnelGenerator = new TunnelGenerator(selectedCells);
-            tunnelGenerator.TriangulatePaths();
+            tunnelGenerator.DelaunayTriangulation();
             List<Cell> triangulatedCells = tunnelGenerator.ExportCells();
 
             // Draw fourth step
@@ -157,19 +161,44 @@ namespace dungeon_generator_demo {
             pen = new Pen(Brushes.Red);
 
             // TODO: There has to be a better way to do this.
+            //foreach (Cell cell in triangulatedCells) {
+            //    // Iterate the hash code.
+            //    foreach (int hashcode in cell.ConnectedCell) {
+            //        // Get the cells that's connected to it.
+            //        foreach (Cell innerCell in triangulatedCells) {
+            //            // If found, draw it and break out of the loop.
+            //            if (hashcode == innerCell.GetHashCode()) {
+            //                DrawLineFromCells(ref graph, ref pen, cell, innerCell, canvasSizeX, canvasSizeY);
+            //                break;
+            //            }
+            //        }
+            //    }
+            //}
+            //foreach (Cell cell in triangulatedCells) {
+            //    var foundCells = triangulatedCells
+            //        .Where(o => cell != o && (cell.ConnectedCell[0] == o.GetHashCode() || 
+            //            cell.ConnectedCell[1] == o.GetHashCode()));
+            //    foreach (Cell foundCell in foundCells) {
+            //        DrawLineFromCells(ref graph, ref pen, cell, foundCell, canvasSizeX, canvasSizeY);
+            //    }
+            //}
             foreach (Cell cell in triangulatedCells) {
-                // Iterate the hash code.
-                foreach (int hashcode in cell.ConnectedCell) {
-                    // Get the cells that's connected to it.
-                    foreach (Cell innerCell in triangulatedCells) {
-                        // If found, draw it and break out of the loop.
-                        if (hashcode == innerCell.GetHashCode()) {
-                            DrawLineFromCells(ref graph, ref pen, cell, innerCell, canvasSizeX, canvasSizeY);
-                            break;
-                        }
-                    }
+                var foundCells = triangulatedCells.Where(o => cell != o && cell.ConnectedCell.Contains(o.GetHashCode()));
+                foreach (Cell foundCell in foundCells) {
+                    DrawLineFromCells(ref graph, ref pen, cell, foundCell, canvasSizeX, canvasSizeY);
                 }
             }
+
+            // TODO This is here for a test.
+            //Delaunator delaunator = new Delaunator(triangulatedCells.Select(
+            //    o => (IPoint) new procedural_dungeon_generator.DelaunayTriangulation.Models.Point(o.LocationCenter.X, o.LocationCenter.Y, o.GetHashCode())).ToArray());
+
+            //delaunator.ForEachTriangleEdge(edge => {
+            //    DrawLineFromCells(ref graph, ref pen, 
+            //        new Point((int)edge.P.X, (int) edge.P.Y), 
+            //        new Point((int) edge.Q.X, (int) edge.Q.Y), 
+            //        canvasSizeX, canvasSizeY);
+            //});
 
             Console.WriteLine("Image drawn. Saving ...");
 
@@ -181,14 +210,23 @@ namespace dungeon_generator_demo {
             image.Save("step4.png", System.Drawing.Imaging.ImageFormat.Png);
 
             Console.WriteLine("Image has been saved as \"step4.png\"");
+
+            Console.WriteLine("\n\nDebug Log:\n");
+            triangulatedCells.ForEach(o => Console.WriteLine($"{o}"));
         }
 
-        static void DrawLineFromCells(ref Graphics graph, ref Pen pen, Cell cellA, Cell cellB, int canvasSizeX, int canvasSizeY) {
-            graph.DrawLines(pen,
-                new Point[] {
-                    new Point(cellA.LocationCenter.X, cellA.LocationCenter.Y),
-                    new Point(cellB.LocationCenter.X, cellB.LocationCenter.Y)
-                });
+        static void DrawLineFromCells(ref Graphics graph, ref Pen pen, Cell a, Cell b, int canvasSizeX, int canvasSizeY) {
+            graph.DrawLines(pen, new Point[] { 
+                new Point(a.LocationCenter.X + (canvasSizeX / 2) - a.Center.X, a.LocationCenter.Y + (canvasSizeY / 2) - a.Center.Y), 
+                new Point(b.LocationCenter.X + (canvasSizeX / 2) - b.Center.X, b.LocationCenter.Y + (canvasSizeY / 2) - b.Center.Y) 
+            });
+        }
+
+        static void DrawLineFromPoints(ref Graphics graph, ref Pen pen, Point a, Point b, int canvasSizeX, int canvasSizeY) {
+            graph.DrawLines(pen, new Point[] {
+                new Point(a.X + (canvasSizeX / 2), a.Y + (canvasSizeX / 2)),
+                new Point(b.X + (canvasSizeX / 2), b.Y + (canvasSizeX / 2))
+            });
         }
 
         static void DrawCube(ref Graphics graph, ref Pen pen, Cell cell, int canvasSizeX, int canvasSizeY) {
