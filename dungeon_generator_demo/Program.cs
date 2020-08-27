@@ -135,17 +135,15 @@ namespace dungeon_generator_demo {
 
             /**
              * =========================================================================
-             *  STEP 4
+             *  STEP 4.1
              * =========================================================================
              */
-            //List<Cell> rearrangedCells = CellDistributor.FlockingSeparation(cells, cells.Count * 2);
-            //List<Cell> selectedCells = CellDistributor.TrimCells(rearrangedCells, 25);
             TunnelGenerator tunnelGenerator = new TunnelGenerator(selectedCells);
             tunnelGenerator.DelaunayTriangulation();
             List<Cell> triangulatedCells = tunnelGenerator.ExportCells();
 
-            // Draw fourth step
-            Console.WriteLine("Drawing fourth step to image ...");
+            // Draw step
+            Console.WriteLine("Drawing fourth step phase one to image ...");
 
             // Generate image with background
             image = new Bitmap(canvasSizeX, canvasSizeY);
@@ -160,28 +158,6 @@ namespace dungeon_generator_demo {
             // Change pen color to difference the lines.
             pen = new Pen(Brushes.Red);
 
-            // TODO: There has to be a better way to do this.
-            //foreach (Cell cell in triangulatedCells) {
-            //    // Iterate the hash code.
-            //    foreach (int hashcode in cell.ConnectedCell) {
-            //        // Get the cells that's connected to it.
-            //        foreach (Cell innerCell in triangulatedCells) {
-            //            // If found, draw it and break out of the loop.
-            //            if (hashcode == innerCell.GetHashCode()) {
-            //                DrawLineFromCells(ref graph, ref pen, cell, innerCell, canvasSizeX, canvasSizeY);
-            //                break;
-            //            }
-            //        }
-            //    }
-            //}
-            //foreach (Cell cell in triangulatedCells) {
-            //    var foundCells = triangulatedCells
-            //        .Where(o => cell != o && (cell.ConnectedCell[0] == o.GetHashCode() || 
-            //            cell.ConnectedCell[1] == o.GetHashCode()));
-            //    foreach (Cell foundCell in foundCells) {
-            //        DrawLineFromCells(ref graph, ref pen, cell, foundCell, canvasSizeX, canvasSizeY);
-            //    }
-            //}
             foreach (Cell cell in triangulatedCells) {
                 var foundCells = triangulatedCells.Where(o => cell != o && cell.ConnectedCell.Contains(o.GetHashCode()));
                 foreach (Cell foundCell in foundCells) {
@@ -189,27 +165,63 @@ namespace dungeon_generator_demo {
                 }
             }
 
-            // TODO This is here for a test.
-            //Delaunator delaunator = new Delaunator(triangulatedCells.Select(
-            //    o => (IPoint) new procedural_dungeon_generator.DelaunayTriangulation.Models.Point(o.LocationCenter.X, o.LocationCenter.Y, o.GetHashCode())).ToArray());
-
-            //delaunator.ForEachTriangleEdge(edge => {
-            //    DrawLineFromCells(ref graph, ref pen, 
-            //        new Point((int)edge.P.X, (int) edge.P.Y), 
-            //        new Point((int) edge.Q.X, (int) edge.Q.Y), 
-            //        canvasSizeX, canvasSizeY);
-            //});
-
             Console.WriteLine("Image drawn. Saving ...");
 
-            if (File.Exists("step4.png")) {
-                File.Delete("step4.png");
+            if (File.Exists("step4.1.png")) {
+                File.Delete("step4.1.png");
                 Console.WriteLine("Previous save file has been deleted.");
             }
 
-            image.Save("step4.png", System.Drawing.Imaging.ImageFormat.Png);
+            image.Save("step4.1.png", System.Drawing.Imaging.ImageFormat.Png);
 
-            Console.WriteLine("Image has been saved as \"step4.png\"");
+            Console.WriteLine("Image has been saved as \"step4.1.png\"");
+
+            /**
+             * =========================================================================
+             *  STEP 4.2
+             * =========================================================================
+             */
+            //TunnelGenerator tunnelGenerator = new TunnelGenerator(selectedCells);
+            //tunnelGenerator.DelaunayTriangulation();
+            //List<Cell> triangulatedCells = tunnelGenerator.ExportCells();
+            tunnelGenerator.RemoveOverlapping();
+            triangulatedCells = tunnelGenerator.ExportCells();
+
+            // Draw step
+            Console.WriteLine("Drawing fourth step phase two to image ...");
+
+            // Generate image with background
+            image = new Bitmap(canvasSizeX, canvasSizeY);
+            graph = Graphics.FromImage(image);
+            graph.Clear(Color.White);
+
+            pen = new Pen(Brushes.Black);
+
+            // Draw the boxes.
+            foreach (Cell cell in selectedCells) {
+                DrawCube(ref graph, ref pen, cell, image.Width, image.Height);
+            }
+
+            // Change pen color to difference the lines.
+            pen = new Pen(Brushes.Red);
+
+            foreach (Cell cell in triangulatedCells) {
+                var foundCells = triangulatedCells.Where(o => cell != o && cell.ConnectedCell.Contains(o.GetHashCode()));
+                foreach (Cell foundCell in foundCells) {
+                    DrawLineFromCells(ref graph, ref pen, cell, foundCell, canvasSizeX, canvasSizeY);
+                }
+            }
+
+            Console.WriteLine("Image drawn. Saving ...");
+
+            if (File.Exists("step4.2.png")) {
+                File.Delete("step4.2.png");
+                Console.WriteLine("Previous save file has been deleted.");
+            }
+
+            image.Save("step4.2.png", System.Drawing.Imaging.ImageFormat.Png);
+
+            Console.WriteLine("Image has been saved as \"step4.2.png\"");
 
             Console.WriteLine("\n\nDebug Log:\n");
             triangulatedCells.ForEach(o => Console.WriteLine($"{o}"));

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 using procedural_dungeon_generator.Common;
@@ -69,6 +71,30 @@ namespace procedural_dungeon_generator.Components {
             return Math.Abs(Location.X - other.Location.X) * 2 < (Size.X + other.Size.X) &&
                 Math.Abs(Location.Y - other.Location.Y) * 2 < (Size.Y + other.Size.Y);
         }
+
+        /// <summary>
+        /// Check if this cell collides with a point, based on size and location.
+        /// 
+        /// Based from .NET Core repo (https://github.com/dotnet/runtime/blob/master/src/libraries/System.Drawing.Primitives/src/System/Drawing/Rectangle.cs#L222).
+        /// Somehow, even tho I copied it from there, it's broken.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public bool CheckCollision(Point other) =>
+            Location.X <= other.X &&
+            other.X < Location.X + Size.X &&
+            Location.Y <= other.Y &&
+            other.Y < Location.Y + Size.Y;
+
+        //public bool CheckCollision(Point other) {
+        //return Location >= other && other <= (Location + Size);
+        //return other.X > Location.X && other.X < (Location + Size).X &&
+        //    other.Y > Location.Y && other.Y < (Location + Size).Y;
+        //}
+
+        //public bool CheckCollision(Point other) {
+
+        //}
 
         /// <summary>
         /// This method will compare its own center distance with other cell.
