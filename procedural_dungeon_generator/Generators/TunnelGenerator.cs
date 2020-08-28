@@ -88,8 +88,9 @@ namespace procedural_dungeon_generator.Generators {
                             (int)pointA.Distance(pointB.LocationCenter));
 
                         // Iterate through them and find any collision.
-                        // TODO: For some reason, sometimes it detects a collision, sometimes it doesn't.
+                        // For some reason, sometimes it detects a collision, sometimes it doesn't.
                         // Sometimes it deletes the wrong connection altogether! It needs fixing.
+                        // NOTE: It's fixed. See this commit's message.
                         foreach (Point point in pathPoints) {
                             // Check if it collides.
                             if (unrelatedCell.CheckCollision(point)) {
@@ -134,7 +135,7 @@ namespace procedural_dungeon_generator.Generators {
         /// </summary>
         /// <returns></returns>
         public List<Tunnel> GenerateTunnel() {
-            return new CellWallDigger(cells).SimpleTunnels();
+            return new CellWallDigger(cells).CreateSimpleTunnels();
         }
 
         /// <summary>

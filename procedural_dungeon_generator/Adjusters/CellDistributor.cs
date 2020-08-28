@@ -116,6 +116,15 @@ namespace procedural_dungeon_generator.Adjusters {
                 // Throw an error if it hit the limit.
                 if (iteration >= iterationLimit) { throw new OutOfIterationException(iteration); }
             }
+
+            // TODO: For some reason, this thing is offset by center.
+            // We didn't notice this problem up until we refactored the code in demo.
+            // This should be a temporary fix until we can find a better solution to this
+            // problem.
+            foreach (Cell cell in output) {
+                cell.Location -= cell.Center;
+            }
+
             return output;
         }
 

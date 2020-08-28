@@ -9,9 +9,9 @@ namespace procedural_dungeon_generator.Components {
     /// is for a blocky tunnel.
     /// </summary>
     public class Tunnel {
-        int CellHashA { get; }
-        int CellHashB { get; }
-        List<Point> AnglePoint { get; }
+        public int CellHashA { get; }
+        public int CellHashB { get; }
+        public List<Point> AnglePoint { get; }
 
         public Tunnel(int cellHashA, int cellHashB) {
             CellHashA = cellHashA;
@@ -28,5 +28,11 @@ namespace procedural_dungeon_generator.Components {
         public Tunnel (Cell a, Cell b) : this(a.GetHashCode(), b.GetHashCode()) { }
         public Tunnel (Cell a, Cell b, List<Point> anglePoint) : 
             this(a.GetHashCode(), b.GetHashCode(), anglePoint) { }
+
+        /// <summary>
+        /// Insert a point of angle. Please keep it in order.
+        /// </summary>
+        /// <param name="point"></param>
+        public void InsertAnglePoint(Point point) => AnglePoint.Add(point);
     }
 }

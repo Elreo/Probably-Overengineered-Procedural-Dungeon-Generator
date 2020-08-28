@@ -19,8 +19,26 @@ namespace procedural_dungeon_generator.Common {
 
         public Point() : this(0, 0) { }
 
+        /// <summary>
+        /// Get distance of this point with that point.
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns></returns>
         public double Distance(Point point) {
             return Math.Sqrt(Math.Pow(point.X - X, 2) + Math.Pow(point.Y - Y, 2));
+        }
+
+        /// <summary>
+        /// Get angle or curve between this point and that point.
+        /// Reference: https://stackoverflow.com/questions/7586063/how-to-calculate-the-angle-between-a-line-and-the-horizontal-axis
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns></returns>
+        public double GetAngle(Point point) {
+            int deltaY = point.Y - Y;
+            int deltaX = point.X - X;
+
+            return Math.Atan2(deltaY, deltaX) * 180 / Math.PI;
         }
 
         public static Point operator +(Point a, Point b) => new Point(a.X + b.X, a.Y + b.Y);
