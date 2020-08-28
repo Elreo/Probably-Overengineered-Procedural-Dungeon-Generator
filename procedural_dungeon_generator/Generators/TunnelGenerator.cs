@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 
 using procedural_dungeon_generator.Common;
 using procedural_dungeon_generator.Components;
 using procedural_dungeon_generator.DelaunayTriangulation;
 using procedural_dungeon_generator.DelaunayTriangulation.Interfaces;
+using procedural_dungeon_generator.Algorithms.MinimumSpanningTree;
+using procedural_dungeon_generator.Algorithms.MinimumSpanningTree.KruskalsAlgorithm;
+using procedural_dungeon_generator.Algorithms.MinimumSpanningTree.PrimsAlgorithm;
 using procedural_dungeon_generator.Tunneler;
 
 namespace procedural_dungeon_generator.Generators {
@@ -64,6 +68,7 @@ namespace procedural_dungeon_generator.Generators {
             foreach (Cell cell in cells) {
                 // Gather all the cells.
                 Point pointA = cell.LocationCenter;
+                // TODO: Sometimes, there are more than one elements.
                 List<Cell> PointBs = cell.ConnectedCell
                     .Select(hash => cells.Single(c => c.GetHashCode() == hash))
                     .ToList();
@@ -135,20 +140,90 @@ namespace procedural_dungeon_generator.Generators {
         /// </summary>
         /// <returns></returns>
         public List<Tunnel> GenerateTunnel() {
+            // TODO: Finish this.
             return new CellWallDigger(cells).CreateSimpleTunnels();
         }
 
         /// <summary>
         /// This method is used to reduce the amount of tunnels that exist and ensured that
         /// every cell is connected with the tunnel. It uses Minimum Spanning Tree implementation.
+        /// There are multiple algorithm methods that can be used.
         /// </summary>
-        public void MinimumSpanningTree() {
-            // Implement minimum spanning tree.
+        public void MinimumSpanningTree(MSTSelection algorithm = MSTSelection.Kruskal) {
+            // TODO: Implement minimum spanning tree.
             throw new NotImplementedException();
+            switch (algorithm) {
+                case MSTSelection.Kruskal: cells = new KruskalsMST(cells, GenerateTunnel()).GetProcessedCells(); break;
+                case MSTSelection.Prim: throw new NotImplementedException("Prim not yet implemented."); break;
+                default: throw new InvalidOperationException("Unknown algorithm.");
+            }
+        }
+
+        /// <summary>
+        /// This one is the simplest way to reduce the amount of tunnels. It does this by randomly
+        /// removing one of the tunnels in the cell. However, to ensure that everything is still 
+        /// connected with each other, it will not remove the last two tunnel.
+        /// </summary>
+        public void TrimCellConnections() {
+            // Transform all cells to trimcells and sort them.
+            List<TrimCell> trimCells = cells
+                .Select(x => MakeTrimCell(x))
+                .OrderBy(x => x.cell.ConnectedCell.Count)
+                .ToList();
+
+            // Iterate through them all.
+            foreach (TrimCell trimCell in trimCells) {
+                // Check if it has more than two and not yet trimmed.
+                if (trimCell.cell.ConnectedCell.Count > 2 && !trimCell.trimmed) {
+                    int index = new Random().Next(0, trimCell.cell.ConnectedCell.Count);
+                    int hashB = trimCell.cell.ConnectedCell.ElementAt(index);
+
+                    // Check for the partner's trim condition.
+                    bool cond = false;
+                    foreach (TrimCell tc in trimCells) {
+                        if (tc.cell.GetHashCode() == hashB && tc.trimmed) {
+                            cond = true;
+                        }
+                    }
+                    if (cond) continue;
+
+                    // If it does, remove one connection at random.
+
+                    // Remove from itself.
+                    trimCell.cell.ConnectedCell.Remove(hashB);
+                    trimCell.trimmed = true;
+
+                    // Remove from the other.
+                    trimCells.ForEach(x => {
+                        if (x.cell.GetHashCode() == hashB) {
+                            x.cell.ConnectedCell.Remove(trimCell.cell.GetHashCode());
+                            x.trimmed = true;
+                        }
+                    });
+                }
+            }
+
+            // Now transform them back to regular cell lists and assign them to cells.
+            cells = trimCells.Select(x => x.cell).ToList();
+        }
+
+        /// <summary>
+        /// Reserved for the function up there. It's used to mark something
+        /// when something was removed there.
+        /// </summary>
+        private class TrimCell {
+            public Cell cell;
+            public bool trimmed;
+        }
+
+        private TrimCell MakeTrimCell(Cell cell) {
+            return new TrimCell() { cell = cell, trimmed = false };
         }
 
         public List<Cell> ExportCells() {
             return cells;
         }
     }
+
+    
 }

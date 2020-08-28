@@ -74,5 +74,16 @@ namespace procedural_dungeon_generator.Tunneler {
             }
             return output;
         }
+
+        /// <summary>
+        /// This method is used to adjust the tunnels and ensure that 
+        /// </summary>
+        /// <param name="inputTunnels"></param>
+        /// <param name="inputCells"></param>
+        /// <returns></returns>
+        public List<Tunnel> UncollideTunnnels(List<Tunnel> inputTunnels) {
+            // TODO: Implement this.
+            throw new NotImplementedException();
+        }
     }
 }

@@ -2,12 +2,12 @@
 using System.IO;
 using System.Drawing;
 using System.Collections.Generic;
+using System.Linq;
 
 using procedural_dungeon_generator.Generators;
 using procedural_dungeon_generator.Components;
 using procedural_dungeon_generator.Adjusters;
 using procedural_dungeon_generator.Exceptions;
-using System.Linq;
 
 namespace dungeon_generator_demo {
     class Program {
@@ -219,6 +219,52 @@ namespace dungeon_generator_demo {
 
             /**
              * =========================================================================
+             *  STEP 4.3
+             * =========================================================================
+             */
+
+            tunnelGenerator.TrimCellConnections();
+            tunnelGenerator.TrimCellConnections();
+            triangulatedCells = tunnelGenerator.ExportCells();
+
+            // Draw step
+            Console.WriteLine("Drawing fourth step phase three to image ...");
+
+            // Generate image with background
+            image = new Bitmap(canvasSizeX, canvasSizeY);
+            graph = Graphics.FromImage(image);
+            graph.Clear(Color.White);
+
+            pen = new Pen(Brushes.Black);
+
+            // Draw the boxes.
+            foreach (Cell cell in selectedCells) {
+                DrawCube(ref graph, ref pen, cell, image.Width, image.Height);
+            }
+
+           // Change pen color to difference the lines.
+           pen = new Pen(Brushes.Red);
+
+            foreach (Cell cell in triangulatedCells) {
+                var foundCells = triangulatedCells.Where(o => cell != o && cell.ConnectedCell.Contains(o.GetHashCode()));
+                foreach (Cell foundCell in foundCells) {
+                    DrawLineFromCells(ref graph, ref pen, cell, foundCell, canvasSizeX, canvasSizeY);
+                }
+            }
+
+            Console.WriteLine("Image drawn. Saving ...");
+
+            if (File.Exists("step4.3.png")) {
+                File.Delete("step4.3.png");
+                Console.WriteLine("Previous save file has been deleted.");
+            }
+
+            image.Save("step4.3.png", System.Drawing.Imaging.ImageFormat.Png);
+
+            Console.WriteLine("Image has been saved as \"step4.3.png\"");
+
+            /**
+             * =========================================================================
              *  STEP 4.5
              * =========================================================================
              */
@@ -247,8 +293,8 @@ namespace dungeon_generator_demo {
 
             // TODO: It sometimes break for some reason.
             foreach (Tunnel tunnel in tunnels) {
-                var a = cells.Single(cell => cell.GetHashCode() == tunnel.CellHashA).LocationCenter;
-                var b = cells.Single(cell => cell.GetHashCode() == tunnel.CellHashB).LocationCenter;
+                var a = triangulatedCells.Single(cell => cell.GetHashCode() == tunnel.CellHashA).LocationCenter;
+                var b = triangulatedCells.Single(cell => cell.GetHashCode() == tunnel.CellHashB).LocationCenter;
                 DrawLineFromPoints(ref graph, ref pen, a, tunnel.AnglePoint.First(), canvasSizeX, canvasSizeY);
                 DrawLineFromPoints(ref graph, ref pen, b, tunnel.AnglePoint.Last(), canvasSizeX, canvasSizeY);
             }

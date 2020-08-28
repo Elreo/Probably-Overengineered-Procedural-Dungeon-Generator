@@ -1,6 +1,7 @@
 ﻿using procedural_dungeon_generator.Common;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace procedural_dungeon_generator.Components {
@@ -34,5 +35,9 @@ namespace procedural_dungeon_generator.Components {
         /// </summary>
         /// <param name="point"></param>
         public void InsertAnglePoint(Point point) => AnglePoint.Add(point);
+
+        public override int GetHashCode() {
+            return AnglePoint.Sum(o => o.GetHashCode()) ^ CellHashA ^ CellHashB;
+        }
     }
 }
