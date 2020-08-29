@@ -8,4 +8,8 @@
     <None Remove="Generators\TunnelGenerator.cs~RF14ce7ff.TMP" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
 </Project>

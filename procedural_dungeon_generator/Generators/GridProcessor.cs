@@ -11,6 +11,8 @@ namespace procedural_dungeon_generator.Generators {
     /// This class is used to turn those cells and tunnels into grids. WARNING: This particular
     /// implementation is extremely slow. It's best to use the async version of it.
     /// </summary>
+    [Obsolete("The `GridProcessor` class is not async and very slow. " +
+        "If you are generating hundreds of tiles, please consider using the async version, `GridProcessorAsync`.")]
     public class GridProcessor {
         public List<Cell> Cells { get; private set; }
         public List<Tunnel> Tunnels { get; private set; }
