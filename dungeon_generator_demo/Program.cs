@@ -11,8 +11,8 @@ using procedural_dungeon_generator.Exceptions;
 
 namespace dungeon_generator_demo {
     class Program {
-        private static int canvasSizeX = 5000;
-        private static int canvasSizeY = 5000;
+        private static int CANVAS_SIZE_X = 5000;
+        private static int CANVAS_SIZE_Y = 5000;
 
         static void Main(string[] args) {
             Console.WriteLine("Initializing ...");
@@ -32,7 +32,7 @@ namespace dungeon_generator_demo {
             Console.WriteLine("Drawing first step to image ...");
 
             // Generate image with background
-            Image image = new Bitmap(canvasSizeX, canvasSizeY);
+            Image image = new Bitmap(CANVAS_SIZE_X, CANVAS_SIZE_Y);
             Graphics graph = Graphics.FromImage(image);
             graph.Clear(Color.White);
 
@@ -79,7 +79,7 @@ namespace dungeon_generator_demo {
             Console.WriteLine("Drawing second step to image ...");
 
             // Generate image with background
-            image = new Bitmap(canvasSizeX, canvasSizeY);
+            image = new Bitmap(CANVAS_SIZE_X, CANVAS_SIZE_Y);
             graph = Graphics.FromImage(image);
             graph.Clear(Color.White);
 
@@ -110,7 +110,7 @@ namespace dungeon_generator_demo {
             Console.WriteLine("Drawing third step to image ...");
 
             // Generate image with background
-            image = new Bitmap(canvasSizeX, canvasSizeY);
+            image = new Bitmap(CANVAS_SIZE_X, CANVAS_SIZE_Y);
             graph = Graphics.FromImage(image);
             graph.Clear(Color.White);
 
@@ -143,7 +143,7 @@ namespace dungeon_generator_demo {
             Console.WriteLine("Drawing fourth step phase one to image ...");
 
             // Generate image with background
-            image = new Bitmap(canvasSizeX, canvasSizeY);
+            image = new Bitmap(CANVAS_SIZE_X, CANVAS_SIZE_Y);
             graph = Graphics.FromImage(image);
             graph.Clear(Color.White);
 
@@ -158,7 +158,7 @@ namespace dungeon_generator_demo {
             foreach (Cell cell in triangulatedCells) {
                 var foundCells = triangulatedCells.Where(o => cell != o && cell.ConnectedCell.Contains(o.GetHashCode()));
                 foreach (Cell foundCell in foundCells) {
-                    DrawLineFromCells(ref graph, ref pen, cell, foundCell, canvasSizeX, canvasSizeY);
+                    DrawLineFromCells(ref graph, ref pen, cell, foundCell, CANVAS_SIZE_X, CANVAS_SIZE_Y);
                 }
             }
 
@@ -185,7 +185,7 @@ namespace dungeon_generator_demo {
             Console.WriteLine("Drawing fourth step phase two to image ...");
 
             // Generate image with background
-            image = new Bitmap(canvasSizeX, canvasSizeY);
+            image = new Bitmap(CANVAS_SIZE_X, CANVAS_SIZE_Y);
             graph = Graphics.FromImage(image);
             graph.Clear(Color.White);
 
@@ -202,7 +202,7 @@ namespace dungeon_generator_demo {
             foreach (Cell cell in triangulatedCells) {
                 var foundCells = triangulatedCells.Where(o => cell != o && cell.ConnectedCell.Contains(o.GetHashCode()));
                 foreach (Cell foundCell in foundCells) {
-                    DrawLineFromCells(ref graph, ref pen, cell, foundCell, canvasSizeX, canvasSizeY);
+                    DrawLineFromCells(ref graph, ref pen, cell, foundCell, CANVAS_SIZE_X, CANVAS_SIZE_Y);
                 }
             }
 
@@ -231,7 +231,7 @@ namespace dungeon_generator_demo {
             Console.WriteLine("Drawing fourth step phase three to image ...");
 
             // Generate image with background
-            image = new Bitmap(canvasSizeX, canvasSizeY);
+            image = new Bitmap(CANVAS_SIZE_X, CANVAS_SIZE_Y);
             graph = Graphics.FromImage(image);
             graph.Clear(Color.White);
 
@@ -248,7 +248,7 @@ namespace dungeon_generator_demo {
             foreach (Cell cell in triangulatedCells) {
                 var foundCells = triangulatedCells.Where(o => cell != o && cell.ConnectedCell.Contains(o.GetHashCode()));
                 foreach (Cell foundCell in foundCells) {
-                    DrawLineFromCells(ref graph, ref pen, cell, foundCell, canvasSizeX, canvasSizeY);
+                    DrawLineFromCells(ref graph, ref pen, cell, foundCell, CANVAS_SIZE_X, CANVAS_SIZE_Y);
                 }
             }
 
@@ -277,7 +277,7 @@ namespace dungeon_generator_demo {
             Console.WriteLine("Drawing fourth step phase five to image ...");
 
             // Generate image with background
-            image = new Bitmap(canvasSizeX, canvasSizeY);
+            image = new Bitmap(CANVAS_SIZE_X, CANVAS_SIZE_Y);
             graph = Graphics.FromImage(image);
             graph.Clear(Color.White);
 
@@ -295,8 +295,8 @@ namespace dungeon_generator_demo {
             foreach (Tunnel tunnel in tunnels) {
                 var a = triangulatedCells.Single(cell => cell.GetHashCode() == tunnel.CellHashA).LocationCenter;
                 var b = triangulatedCells.Single(cell => cell.GetHashCode() == tunnel.CellHashB).LocationCenter;
-                DrawLineFromPoints(ref graph, ref pen, a, tunnel.AnglePoint.First(), canvasSizeX, canvasSizeY);
-                DrawLineFromPoints(ref graph, ref pen, b, tunnel.AnglePoint.Last(), canvasSizeX, canvasSizeY);
+                DrawLineFromPoints(ref graph, ref pen, a, tunnel.AnglePoint.First(), CANVAS_SIZE_X, CANVAS_SIZE_Y);
+                DrawLineFromPoints(ref graph, ref pen, b, tunnel.AnglePoint.Last(), CANVAS_SIZE_X, CANVAS_SIZE_Y);
             }
 
             Console.WriteLine("Image drawn. Saving ...");
@@ -310,16 +310,89 @@ namespace dungeon_generator_demo {
 
             Console.WriteLine("Image has been saved as \"step4.5.png\"");
 
+            /**
+             * =========================================================================
+             *  STEP 5
+             * =========================================================================
+             */
+            var gridProcessor = new GridProcessorAsync(triangulatedCells, tunnels, 200, 200);
+            
+            var tunnelLayerTask = gridProcessor.CreateTunnelLayer();
+            var cellWallLayerTask = gridProcessor.CreateCellWallLayer();
+            var cellLayerTask = gridProcessor.CreateCellLayer();
+
+            tunnelLayerTask.Wait();
+            cellWallLayerTask.Wait();
+            cellLayerTask.Wait();
+
+            var tunnelLayer = tunnelLayerTask.Result;
+            var cellWallLayer = cellWallLayerTask.Result;
+            var cellLayer = cellLayerTask.Result;
+
+            var gridResult = GridProcessorAsync.MergeGrid(tunnelLayer,
+                cellLayer);
+            gridResult = GridProcessorAsync.MergeGrid(gridResult, cellWallLayer);
+
+
+            // Draw step
+            Console.WriteLine("Drawing fifth step to image ...");
+
+            // Generate image with background
+            image = new Bitmap(CANVAS_SIZE_X, CANVAS_SIZE_Y);
+            graph = Graphics.FromImage(image);
+            graph.Clear(Color.White);
+
+            pen = new Pen(Brushes.Black);
+
+            // Get block size.
+            int blockWidth = CANVAS_SIZE_X / gridResult.Width;
+            int blockHeight = CANVAS_SIZE_Y / gridResult.Height;
+
+            // Draw the boxes.
+            for (int width = 0; width < gridResult.Width; width++) {
+                for (int height = 0; height < gridResult.Height; height++) {
+                    // Draw the colored boxes first.
+                    switch (gridResult[width, height].Type) {
+                        case procedural_dungeon_generator.Common.BlockType.Room:
+                            FillCube(ref graph, Brushes.DarkGreen, 
+                                new Cell(blockWidth - 2, blockHeight - 2, 
+                                width * blockWidth + 1, height * blockHeight + 1));
+                            break;
+                        case procedural_dungeon_generator.Common.BlockType.Tunnel:
+                            FillCube(ref graph, Brushes.DarkGray,
+                                new Cell(blockWidth - 2, blockHeight - 2,
+                                width * blockWidth + 1, height * blockHeight + 1));
+                            break;
+                        case procedural_dungeon_generator.Common.BlockType.RoomWall:
+                            FillCube(ref graph, Brushes.Green,
+                                new Cell(blockWidth - 2, blockHeight - 2,
+                                width * blockWidth + 1, height * blockHeight + 1));
+                            break;
+                        default: break;
+                    }
+
+                    // Then draw the box.
+                    DrawCubeNoText(ref graph, ref pen, new Cell(blockWidth, blockHeight, 
+                        width * blockWidth, height * blockHeight));
+                }
+            }
+
+            Console.WriteLine("Image drawn. Saving ...");
+
+            if (File.Exists("step5.png")) {
+                File.Delete("step5.png");
+                Console.WriteLine("Previous save file has been deleted.");
+            }
+
+            image.Save("step5.png", System.Drawing.Imaging.ImageFormat.Png);
+
+            Console.WriteLine("Image has been saved as \"step5.png\"");
+
             Console.WriteLine("\n\nDebug Log:\n");
             triangulatedCells.ForEach(o => Console.WriteLine($"{o}"));
         }
 
         static void DrawLineFromCells(ref Graphics graph, ref Pen pen, Cell a, Cell b, int canvasSizeX, int canvasSizeY) {
-            //graph.DrawLines(pen, new Point[] { 
-            //    new Point(a.LocationCenter.X + (canvasSizeX / 2) - a.Center.X, a.LocationCenter.Y + (canvasSizeY / 2) - a.Center.Y), 
-            //    new Point(b.LocationCenter.X + (canvasSizeX / 2) - b.Center.X, b.LocationCenter.Y + (canvasSizeY / 2) - b.Center.Y) 
-            //});
-
             graph.DrawLines(pen, new Point[] {
                 new Point(a.LocationCenter.X + (canvasSizeX / 2), a.LocationCenter.Y + (canvasSizeY / 2)),
                 new Point(b.LocationCenter.X + (canvasSizeX / 2), b.LocationCenter.Y + (canvasSizeY / 2))
@@ -342,33 +415,20 @@ namespace dungeon_generator_demo {
             graph.DrawString(text, new Font("Tahoma", 8), Brushes.Black, rect);
         }
 
-        static void DrawCube(ref Graphics graph, ref Pen pen, Cell cell, int canvasSizeX, int canvasSizeY) {
+        static void DrawCube(ref Graphics graph, ref Pen pen, Cell cell, int canvasSizeX = 1, int canvasSizeY = 1) {
             graph.DrawRectangle(pen, ToRectangle(cell, canvasSizeX, canvasSizeY));
             DrawTextInRectangle(ref graph, $"{{{ cell.Location.X }, { cell.Location.Y }}}\n" +
-                $"{{{ cell.Location.X + cell.Size.Y }, {cell.Location.Y + cell.Size.Y}}}", 
+                $"{{{ cell.Location.X + cell.Size.Y }, {cell.Location.Y + cell.Size.Y}}}\n" +
+                $"{{{ cell.SizeDeterminant }}}", 
                 ToRectangle(cell, canvasSizeX, canvasSizeY));
+        }
 
-            // There must be a better way to draw this.
-            //graph.DrawLines(pen,
-            //    new Point[] {
-            //        new Point(cell.Location.X + (canvasSizeX / 2) - cell.Center.X, cell.Location.Y + (canvasSizeY / 2) - cell.Center.Y),
-            //        new Point(cell.Location.X + (canvasSizeX / 2) - cell.Center.X, cell.Location.Y + (canvasSizeY / 2) - cell.Center.Y + cell.Size.Y)
-            //    });
-            //graph.DrawLines(pen,
-            //    new Point[] {
-            //        new Point(cell.Location.X + (canvasSizeX / 2) - cell.Center.X, cell.Location.Y + (canvasSizeY / 2) - cell.Center.Y),
-            //        new Point(cell.Location.X + (canvasSizeX / 2) - cell.Center.X + cell.Size.X, cell.Location.Y + (canvasSizeY / 2) - cell.Center.Y)
-            //    });
-            //graph.DrawLines(pen,
-            //    new Point[] {
-            //        new Point(cell.Location.X + (canvasSizeX / 2) - cell.Center.X + cell.Size.X, cell.Location.Y + (canvasSizeY / 2) - cell.Center.Y),
-            //        new Point(cell.Location.X + (canvasSizeX / 2) - cell.Center.X + cell.Size.X, cell.Location.Y + (canvasSizeY / 2) - cell.Center.Y + cell.Size.Y)
-            //    });
-            //graph.DrawLines(pen,
-            //    new Point[] {
-            //        new Point(cell.Location.X + (canvasSizeX / 2) - cell.Center.X, cell.Location.Y + (canvasSizeY / 2) - cell.Center.Y + cell.Size.Y),
-            //        new Point(cell.Location.X + (canvasSizeX / 2) - cell.Center.X + cell.Size.X, cell.Location.Y + (canvasSizeY / 2) - cell.Center.Y + cell.Size.Y)
-            //    });
+        static void DrawCubeNoText(ref Graphics graph, ref Pen pen, Cell cell, int canvasSizeX = 1, int canvasSizeY = 1) {
+            graph.DrawRectangle(pen, ToRectangle(cell, canvasSizeX, canvasSizeY));
+        }
+
+        static void FillCube(ref Graphics graph, Brush color, Cell cell, int canvasSizeX = 1, int canvasSizeY = 1) {
+            graph.FillRectangle(color, ToRectangle(cell, canvasSizeX, canvasSizeY));
         }
     }
 }

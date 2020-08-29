@@ -7,14 +7,18 @@ namespace procedural_dungeon_generator.Common {
     /// This is used to identify what kind of block it is.
     /// </summary>
     public enum BlockType {
-        Room, Tunnel, Empty
+        // Basic Type
+        Room, RoomWall, Tunnel, Empty,
+
+        // Block Connectors
+        RoomConnector, TunnelConnector
     }
 
     /// <summary>
     /// A block is a spot located in a grid.
     /// </summary>
     public class Block {
-        public BlockType Type { get; }
+        public BlockType Type { get; set; }
         public int X { get; }
         public int Y { get; }
 

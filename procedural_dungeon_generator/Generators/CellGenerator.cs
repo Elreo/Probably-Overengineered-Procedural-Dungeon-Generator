@@ -63,7 +63,7 @@ namespace procedural_dungeon_generator.Generators {
             List<Cell> output = new List<Cell>();
 
             for (int a = 0; a < amount; a++) {
-                double boxmuller = Formula.BoxMullerMD(mean, std);
+                double boxmuller = Utility.BoxMullerMD(mean, std);
                 if (boxmuller < 0.0) boxmuller *= -1;
                 // output.Add(GenerateCell((int)(min * boxmueller), (int)(max * boxmueller), radius));
                 // We can't use the one above since it didn't add the box muller 

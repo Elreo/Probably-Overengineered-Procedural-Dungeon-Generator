@@ -89,8 +89,10 @@ namespace procedural_dungeon_generator.Generators {
                         if (unrelatedCell == pointB) break;
 
                         // Create the path points.
-                        List<Point> pathPoints = CreatePathPoints(pointA, pointB.LocationCenter, 
-                            (int)pointA.Distance(pointB.LocationCenter));
+                        //List<Point> pathPoints = CreatePathPoints(pointA, pointB.LocationCenter, 
+                        //    (int)pointA.Distance(pointB.LocationCenter));
+                        List<Point> pathPoints = Utility.CreatePathPoints(pointA, pointB.LocationCenter,
+                            (int) pointA.Distance(pointB.LocationCenter));
 
                         // Iterate through them and find any collision.
                         // For some reason, sometimes it detects a collision, sometimes it doesn't.
@@ -110,28 +112,6 @@ namespace procedural_dungeon_generator.Generators {
                     }
                 }
             }
-        }
-
-
-        /// <summary>
-        /// This methods crates a list of points that goes from point A to B.
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <param name="pointsAmount"></param>
-        /// <returns></returns>
-        private List<Point> CreatePathPoints(Point a, Point b, int pointsAmount) {
-            // https://stackoverflow.com/questions/21249739/how-to-calculate-the-points-between-two-given-points-and-given-distance
-            pointsAmount += 1;
-            double d = Math.Sqrt((a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y)) / pointsAmount;
-            double fi = Math.Atan2(b.Y - a.Y, b.X - a.X);
-
-            //var outputPoints = new List<Point>(pointsAmount + 1);
-            var outputPoints = new List<Point>();
-            for (int i = 0; i <= pointsAmount; ++i) {
-                outputPoints.Add(new Point((int)(a.X + i * d * Math.Cos(fi)), (int)(a.Y + i * d * Math.Sin(fi))));
-            }
-            return outputPoints;
         }
 
         /// <summary>
@@ -169,6 +149,7 @@ namespace procedural_dungeon_generator.Generators {
             List<TrimCell> trimCells = cells
                 .Select(x => MakeTrimCell(x))
                 .OrderBy(x => x.cell.ConnectedCell.Count)
+                .Reverse()
                 .ToList();
 
             // Iterate through them all.

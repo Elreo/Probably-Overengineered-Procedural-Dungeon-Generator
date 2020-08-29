@@ -2,21 +2,26 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace procedural_dungeon_generator.Components {
     /// <summary>
-    /// This class is used to contain data that is produced
+    /// A thread-safe version of GridLayer class.
     /// by the grid.
     /// </summary>
-    public class GridLayer {
+    public class GridLayerAsync {
         //Block[][] blocks;
         public Block[,] Blocks { get; }
         public int Width { get; }
         public int Height { get; }
 
-        public GridLayer(int width, int height) {
+        // Mutex to lock and unlock the blocks.
+        private Mutex mut = new Mutex();
+
+        public GridLayerAsync(int width, int height) {
             Width = width;
             Height = height;
+
 
             Blocks = new Block[width, height];
             for (int w = 0; w < width; w++) {
@@ -28,8 +33,18 @@ namespace procedural_dungeon_generator.Components {
         }
 
         public Block this[int width, int height] {
-            get => Blocks[width, height];
-            set => Blocks[width, height] = value;
+            get {
+                Block output;
+                mut.WaitOne();
+                output = Blocks[width, height];
+                mut.ReleaseMutex();
+                return output;
+            }
+            set {
+                mut.WaitOne();
+                Blocks[width, height] = value;
+                mut.ReleaseMutex();
+            }
         }
     }
 }

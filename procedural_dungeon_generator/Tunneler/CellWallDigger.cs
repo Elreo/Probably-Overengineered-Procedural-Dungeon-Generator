@@ -76,7 +76,8 @@ namespace procedural_dungeon_generator.Tunneler {
         }
 
         /// <summary>
-        /// This method is used to adjust the tunnels and ensure that 
+        /// This method is used to adjust the tunnels and ensure that every tunnel does not collide with each other.
+        /// Notably, it follows the collision rules of its own cell.
         /// </summary>
         /// <param name="inputTunnels"></param>
         /// <param name="inputCells"></param>
@@ -84,6 +85,23 @@ namespace procedural_dungeon_generator.Tunneler {
         public List<Tunnel> UncollideTunnnels(List<Tunnel> inputTunnels) {
             // TODO: Implement this.
             throw new NotImplementedException();
+            List<Tunnel> output = new List<Tunnel>();
+
+            // Iterate through the input.
+            foreach (Tunnel tunnel in inputTunnels) {
+                // The first thing we need is to get the cells.
+                var cellA = Cells.Single(x => tunnel.CellHashA == x.GetHashCode());
+                var cellB = Cells.Single(x => tunnel.CellHashB == x.GetHashCode());
+
+                // Next, we make the points.
+                var tunnelPath = Utility.CreatePathPoints(cellA.LocationCenter, 
+                    cellB.LocationCenter, (int)cellA.RadiusDistanceFrom(cellB));
+                
+                // We remove the points that collides with its own connections
+            }
+
+            return output;
         }
+
     }
 }

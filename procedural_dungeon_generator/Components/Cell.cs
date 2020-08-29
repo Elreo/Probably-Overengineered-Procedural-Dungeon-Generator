@@ -63,7 +63,7 @@ namespace procedural_dungeon_generator.Components {
 
         /// <summary>
         /// Check if this cell collides with another cell, based on size and
-        /// location.
+        /// location. It returns true if it collides.
         /// </summary>
         /// <param name="other"></param>
         /// <returns></returns>
@@ -103,9 +103,10 @@ namespace procedural_dungeon_generator.Components {
         /// <param name=""></param>
         /// <returns></returns>
         public double RadiusDistanceFrom(Cell other) {
-            return Math.Sqrt((double)(
-                Math.Pow(other.LocationCenter.X - LocationCenter.X, 2) + 
-                Math.Pow(other.LocationCenter.Y - LocationCenter.Y, 2)));
+            //return Math.Sqrt((double)(
+            //    Math.Pow(other.LocationCenter.X - LocationCenter.X, 2) + 
+            //    Math.Pow(other.LocationCenter.Y - LocationCenter.Y, 2)));
+            return LocationCenter.Distance(other.LocationCenter);
         }
 
         public override int GetHashCode() {

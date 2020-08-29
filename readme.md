@@ -11,9 +11,19 @@ the check mark indicates that it has been implemented. It works by going through
 ![Step 3 Image](repo_images/step3.png)
 4. - [ ] **Distribute tunnels accordingly.** This one is self-explanatory. Add the tunnels, or hallways. Depends with how you want to do it.
 	1. - [x] **Connect all rooms.** We use [Delaunay Triangulation](https://en.wikipedia.org/wiki/Delaunay_triangulation) to create the tunnels. This way, all the rooms are connected with each other with the tunnels.
-	![Step 4 Phase 1 Image](repo_images/step4_1.png)
+	![Step 4 Phase 1 Image](repo_images/step4.1.png)
 	2. - [x] **Remove overlapping connections.** This is done to ensure that every relationship does not create a messy-looking tunnel.
+	![Step 4 Phase 2 Image](repo_images/step4.2.png)
 	3. - [x] **Ensure it does not generate too many tunnels.** We need to make sure that we don't use all the tunnels that exist there. ~~We cut them off with [Minimum Spanning Tree](https://en.wikipedia.org/wiki/Minimum_spanning_tree) to make sure it does not use all the tunnels, but every room are still connected with each other.~~
-	4. - [x] **Add loops in some areas.** This is done to ensure that the dungeon does not go in straight line. After removing the extra tunnels, we might want to add, say, 15% to 30% amounts of tunnels that was removed previously.
+	![Step 4 Phase 3 Image](repo_images/step4.3.png)
+	4. - [x] ~~**Add loops in some areas.** This is done to ensure that the dungeon does not go in straight line. After removing the extra tunnels, we might want to add, say, 15% to 30% amounts of tunnels that was removed previously.~~
 	5. - [ ] **Generated tunnels must have L shapes, or similar.** To add a bit of variety, this is added to ensure that the dungeons doesn't look weird in the map. If the user so desires, they can merge the tiny, discarded rooms to create a jagged, messy looks of the tunnel.
-5. - [ ] **Incorporate the tile system.** After the dungeons are produced, it needs to be adjusted so that it is tiled properly. Depending with the size, it can be tiled in many ways. This one is optional for certain procedural generation use cases.
+	![Step 4 Phase 5 Image](repo_images/step4.5.png)
+5. - [x] **Incorporate the tile system.** After the dungeons are produced, it needs to be adjusted so that it is tiled properly. Depending with the size, it can be tiled in many ways. This one is optional for certain procedural generation use cases.
+![Step 5 Image](repo_images/step5.png)
+
+# How do I use it?
+TODO: Write a guide here.
+
+# License
+This library and its demo is licensed under MIT license.
