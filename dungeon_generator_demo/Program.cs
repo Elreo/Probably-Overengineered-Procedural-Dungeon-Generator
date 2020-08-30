@@ -332,6 +332,7 @@ namespace dungeon_generator_demo {
             var gridResult = GridProcessorAsync.MergeGrid(tunnelLayer,
                 cellLayer);
             gridResult = GridProcessorAsync.MergeGrid(gridResult, cellWallLayer);
+            gridResult = GridProcessorAsync.GenerateConnections(gridResult);
 
 
             // Draw step
@@ -365,6 +366,11 @@ namespace dungeon_generator_demo {
                             break;
                         case procedural_dungeon_generator.Common.BlockType.RoomWall:
                             FillCube(ref graph, Brushes.Green,
+                                new Cell(blockWidth - 2, blockHeight - 2,
+                                width * blockWidth + 1, height * blockHeight + 1));
+                            break;
+                        case procedural_dungeon_generator.Common.BlockType.RoomConnector:
+                            FillCube(ref graph, Brushes.GreenYellow,
                                 new Cell(blockWidth - 2, blockHeight - 2,
                                 width * blockWidth + 1, height * blockHeight + 1));
                             break;
