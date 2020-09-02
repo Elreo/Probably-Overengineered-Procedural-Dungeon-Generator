@@ -246,14 +246,14 @@ namespace procedural_dungeon_generator.Generators {
             // This is used to blacklist blocks from checks. This is used
             // to prevent creating a large amount of doors in very close
             // proximity.
-            List<(int, int)> noScan = new List<(int, int)>();
+            //List<(int, int)> noScan = new List<(int, int)>();
             GridLayer output = grid;
 
             // We iterate through the grids.
             for (int x = 0; x < grid.Width; x++) {
                 for (int y = 0; y < grid.Height; y++) {
                     // Check if it's blacklisted.
-                    if (noScan.Contains((x, y))) continue;
+                    //if (noScan.Contains((x, y))) continue;
 
                     // Now check for surrounding. Here's the condition of getting marked
                     // as a room connection blacklist;
@@ -264,7 +264,8 @@ namespace procedural_dungeon_generator.Generators {
                     // Check its top block.
                     if (y > 0 && output[x, y].Type == BlockType.RoomWall && output[x, y - 1].Type == BlockType.Tunnel) {
                         // Make sure left and right side are not empty. If so, don't make the connection.
-                        if (output[x - 1, y].Type != BlockType.Empty && output[x + 1, y].Type != BlockType.Empty) {
+                        if (x > 0 && x < grid.Width - 1 &&
+                                output[x - 1, y].Type != BlockType.Empty && output[x + 1, y].Type != BlockType.Empty) {
                             output[x, y].Type = BlockType.RoomConnector;
                         }
                     }
@@ -272,14 +273,16 @@ namespace procedural_dungeon_generator.Generators {
                     // Check its left block.
                     if (x > 0 && output[x, y].Type == BlockType.RoomWall && output[x - 1, y].Type == BlockType.Tunnel) {
                         // Make sure top and bottom side are not empty. If so, don't make the connection.
-                        if (output[x, y - 1].Type != BlockType.Empty && output[x, y + 1].Type != BlockType.Empty) {
+                        if (y > 0 && y < grid.Height - 1 &&
+                                output[x, y - 1].Type != BlockType.Empty && output[x, y + 1].Type != BlockType.Empty) {
                             output[x, y].Type = BlockType.RoomConnector;
                         }
                     }
 
                     // Check for its right block.
                     if (x < grid.Width - 1 && output[x, y].Type == BlockType.RoomWall && output[x + 1, y].Type == BlockType.Tunnel) {
-                        if (output[x, y - 1].Type != BlockType.Empty && output[x, y + 1].Type != BlockType.Empty) {
+                        if (y > 0 && y < grid.Height - 1 &&
+                                output[x, y - 1].Type != BlockType.Empty && output[x, y + 1].Type != BlockType.Empty) {
                             output[x, y].Type = BlockType.RoomConnector;
                         }
                     }
@@ -287,7 +290,8 @@ namespace procedural_dungeon_generator.Generators {
                     // Check its bottom block.
                     if (y < grid.Height - 1 && output[x, y].Type == BlockType.RoomWall && output[x, y + 1].Type == BlockType.Tunnel) {
                         // Make sure left and right side are not empty. If so, don't make the connection.
-                        if (output[x - 1, y].Type != BlockType.Empty && output[x + 1, y].Type != BlockType.Empty) {
+                        if (x > 0 && x < grid.Width - 1 &&
+                                output[x - 1, y].Type != BlockType.Empty && output[x + 1, y].Type != BlockType.Empty) {
                             output[x, y].Type = BlockType.RoomConnector;
                         }
                     }

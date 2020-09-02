@@ -26,7 +26,7 @@ namespace dungeon_generator_demo {
              *  STEP 1
              * =========================================================================
              */
-            List<Cell> cells = cellGenerator.GenerateCellList(150, 50, 250, 750, 1, 0.2);
+            List<Cell> cells = cellGenerator.GenerateCellList(150, 50, 250, 750, 50, 1, 0.2);
 
             // Draw first step
             Console.WriteLine("Drawing first step to image ...");
@@ -315,25 +315,33 @@ namespace dungeon_generator_demo {
              *  STEP 5
              * =========================================================================
              */
-            var gridProcessor = new GridProcessorAsync(triangulatedCells, tunnels, 200, 200);
-            
-            var tunnelLayerTask = gridProcessor.CreateTunnelLayer();
-            var cellWallLayerTask = gridProcessor.CreateCellWallLayer();
-            var cellLayerTask = gridProcessor.CreateCellLayer();
+            //var gridProcessor = new GridProcessorAsync(triangulatedCells, tunnels, 200, 200);
+            var gridProcessor = new GridProcessor(triangulatedCells, tunnels, 150, 150);
 
-            tunnelLayerTask.Wait();
-            cellWallLayerTask.Wait();
-            cellLayerTask.Wait();
+            //var tunnelLayerTask = gridProcessor.CreateTunnelLayer();
+            //var cellWallLayerTask = gridProcessor.CreateCellWallLayer();
+            //var cellLayerTask = gridProcessor.CreateCellLayer();
 
-            var tunnelLayer = tunnelLayerTask.Result;
-            var cellWallLayer = cellWallLayerTask.Result;
-            var cellLayer = cellLayerTask.Result;
+            //tunnelLayerTask.Wait();
+            //cellWallLayerTask.Wait();
+            //cellLayerTask.Wait();
 
-            var gridResult = GridProcessorAsync.MergeGrid(tunnelLayer,
+            //var tunnelLayer = tunnelLayerTask.Result;
+            //var cellWallLayer = cellWallLayerTask.Result;
+            //var cellLayer = cellLayerTask.Result;
+
+            var tunnelLayer = gridProcessor.CreateTunnelLayer();
+            var cellWallLayer = gridProcessor.CreateCellWallLayer();
+            var cellLayer = gridProcessor.CreateCellLayer();
+
+            //var gridResult = GridProcessorAsync.MergeGrid(tunnelLayer,
+            //    cellLayer);
+            //gridResult = GridProcessorAsync.MergeGrid(gridResult, cellWallLayer);
+            //gridResult = GridProcessorAsync.GenerateConnections(gridResult);
+            var gridResult = GridProcessor.MergeGrid(tunnelLayer,
                 cellLayer);
-            gridResult = GridProcessorAsync.MergeGrid(gridResult, cellWallLayer);
-            gridResult = GridProcessorAsync.GenerateConnections(gridResult);
-
+            gridResult = GridProcessor.MergeGrid(gridResult, cellWallLayer);
+            gridResult = GridProcessor.GenerateConnections(gridResult);
 
             // Draw step
             Console.WriteLine("Drawing fifth step to image ...");

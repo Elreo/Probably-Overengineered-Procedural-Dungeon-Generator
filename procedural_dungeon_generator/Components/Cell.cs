@@ -20,6 +20,13 @@ namespace procedural_dungeon_generator.Components {
     public class Cell {
 
         public Point Size { get; }
+
+        /// <summary>
+        /// It's basically a size with extra multiplier. It's used for 
+        /// cell distributor to set a distance.
+        /// </summary>
+        public Point IllusionSize { get; }
+
         public Point Location { get; set; }
 
         public double SizeDeterminant { get; }
@@ -30,6 +37,13 @@ namespace procedural_dungeon_generator.Components {
 
         public Point LocationCenter {
             get => (Size / new Point(2, 2)) + Location;
+        }
+
+        /// <summary>
+        /// The illusionary center area.
+        /// </summary>
+        public Point IllusionLocationCenter {
+            get => (IllusionSize / new Point(2, 2)) + Location;
         }
 
         /// <summary>
@@ -54,11 +68,17 @@ namespace procedural_dungeon_generator.Components {
         public Cell(Point size, Point location) : 
             this(size, location, 0) { }
 
-        public Cell(Point size, Point location, double sizeDeterminant) {
+        public Cell(Point size, Point location, double sizeDeterminant) : 
+            this(size, location, sizeDeterminant, 0) {
+            
+        }
+
+        public Cell(Point size, Point location, double sizeDeterminant, int illusionIncrement) {
             Size = size;
             Location = location;
             SizeDeterminant = sizeDeterminant;
             ConnectedCell = new HashSet<int>();
+            IllusionSize = size + new Point(illusionIncrement, illusionIncrement);
         }
 
         /// <summary>
@@ -70,6 +90,17 @@ namespace procedural_dungeon_generator.Components {
         public bool CheckCollision(Cell other) {
             return Math.Abs(Location.X - other.Location.X) * 2 < (Size.X + other.Size.X) &&
                 Math.Abs(Location.Y - other.Location.Y) * 2 < (Size.Y + other.Size.Y);
+        }
+
+        /// <summary>
+        /// Check if this cell collides with another cell, based on illusionary size and
+        /// location. It returns true if it collides.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        public bool CheckCollisionWithIllusion(Cell other) {
+            return Math.Abs(Location.X - other.Location.X) * 2 < (Size.X + other.IllusionSize.X) &&
+                Math.Abs(Location.Y - other.Location.Y) * 2 < (Size.Y + other.IllusionSize.Y);
         }
 
         /// <summary>
@@ -85,6 +116,12 @@ namespace procedural_dungeon_generator.Components {
             other.X < Location.X + Size.X &&
             Location.Y <= other.Y &&
             other.Y < Location.Y + Size.Y;
+
+        public bool CheckCollisionWithIllusion(Point other) =>
+            Location.X <= other.X &&
+            other.X < Location.X + IllusionSize.X &&
+            Location.Y <= other.Y &&
+            other.Y < Location.Y + IllusionSize.Y;
 
         //public bool CheckCollision(Point other) {
         //return Location >= other && other <= (Location + Size);

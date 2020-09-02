@@ -24,7 +24,8 @@ namespace procedural_dungeon_generator.Adjusters {
             List<Cell> output = new List<Cell>();
 
             foreach (Cell cell in cellList) {
-                if (!cell.Equals(checkCell) && cell.CheckCollision(checkCell)) {
+                //if (!cell.Equals(checkCell) && cell.CheckCollision(checkCell)) {
+                if (!cell.Equals(checkCell) && cell.CheckCollisionWithIllusion(checkCell)) {
                     output.Add(cell);
                 }
             }
@@ -69,7 +70,8 @@ namespace procedural_dungeon_generator.Adjusters {
             //Point center = new Point(100, 100); // Center point of all cells.
             List<Cell> output = input.OrderBy(i => i.SizeDeterminant).Reverse().ToList();
             //Point center = CellSum(output).Center;
-            Point center = CellSum(output).LocationCenter;
+            //Point center = CellSum(output).LocationCenter;
+            Point center = CellSum(output).IllusionLocationCenter;
             int movementFactor = 5;
             bool hasIntersections = true;
 
@@ -85,18 +87,20 @@ namespace procedural_dungeon_generator.Adjusters {
                     if (intersectingCells.Count != 0) {
                         Point movementVector = new Point(0, 0);
                         //Point centerC = cell.Center;
-                        Point centerC = cell.LocationCenter;
+                        //Point centerC = cell.LocationCenter;
+                        Point centerC = cell.IllusionLocationCenter;
 
                         // For each cell that overlaps each other.
                         foreach (Cell cPrime in intersectingCells) {
                             //Point centerCPrime = cPrime.Center;
-                            Point centerCPrime = cPrime.LocationCenter;
+                            //Point centerCPrime = cPrime.LocationCenter;
+                            Point centerCPrime = cPrime.IllusionLocationCenter;
 
                             int xTransInner = centerC.X - centerCPrime.X;
                             int yTransInner = centerC.Y - centerCPrime.Y;
 
                             // Add a vector to v proportional to the vector between the center of C and C'.
-                            // TODO: Make sure it's pushing towards the right direction, instead of just one.
+                            // Make sure it's pushing towards the right direction, instead of just one.
                             movementVector.X += xTransInner < 0 ? -movementFactor : movementFactor;
                             movementVector.Y += yTransInner < 0 ? -movementFactor : movementFactor;
                         }
