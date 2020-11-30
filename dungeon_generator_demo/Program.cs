@@ -60,12 +60,12 @@ namespace dungeon_generator_demo {
              *  STEP 2
              * =========================================================================
              */
-            //List<Cell> rearrangedCells = CellDistributor.FlockingSeparation(cells, cells.Count * 2);
+            //List<Cell> rearrangedCells = CellProcessor.FlockingSeparation(cells, cells.Count * 2);
             List<Cell> rearrangedCells;
 
             while (true) {
                 try {
-                    rearrangedCells = CellDistributor.FlockingSeparation(cells, cells.Count * 2);
+                    rearrangedCells = CellProcessor.FlockingSeparation(cells, cells.Count * 2);
                     break;
                 } catch (OutOfIterationException exception) {
                     Console.WriteLine("WARNING: Separation iteration has been exhausted. " +
@@ -104,7 +104,7 @@ namespace dungeon_generator_demo {
              *  STEP 3
              * =========================================================================
              */
-            List<Cell> selectedCells = CellDistributor.TrimCells(rearrangedCells, 25);
+            List<Cell> selectedCells = CellProcessor.TrimCells(rearrangedCells, 25);
 
             // Draw second step
             Console.WriteLine("Drawing third step to image ...");
@@ -315,8 +315,8 @@ namespace dungeon_generator_demo {
              *  STEP 5
              * =========================================================================
              */
-            //var gridProcessor = new GridProcessorAsync(triangulatedCells, tunnels, 200, 200);
-            var gridProcessor = new GridProcessor(triangulatedCells, tunnels, 150, 150);
+            //var gridProcessor = new GridConverterAsync(triangulatedCells, tunnels, 200, 200);
+            var gridProcessor = new GridConverter(triangulatedCells, tunnels, 150, 150);
 
             //var tunnelLayerTask = gridProcessor.CreateTunnelLayer();
             //var cellWallLayerTask = gridProcessor.CreateCellWallLayer();
@@ -330,18 +330,24 @@ namespace dungeon_generator_demo {
             //var cellWallLayer = cellWallLayerTask.Result;
             //var cellLayer = cellLayerTask.Result;
 
-            var tunnelLayer = gridProcessor.CreateTunnelLayer();
+            //var tunnelLayer = gridProcessor.CreateTunnelLayer();
+            var tunnelLayer = gridProcessor.CreateTunnelLayerSimple();
             var cellWallLayer = gridProcessor.CreateCellWallLayer();
             var cellLayer = gridProcessor.CreateCellLayer();
+            var connectionLayer = GridConverter.IntersectGrid(tunnelLayer, cellWallLayer, 
+                procedural_dungeon_generator.Common.BlockType.RoomConnector);
 
-            //var gridResult = GridProcessorAsync.MergeGrid(tunnelLayer,
+            //var gridResult = GridConverterAsync.MergeGrid(tunnelLayer,
             //    cellLayer);
-            //gridResult = GridProcessorAsync.MergeGrid(gridResult, cellWallLayer);
-            //gridResult = GridProcessorAsync.GenerateConnections(gridResult);
-            var gridResult = GridProcessor.MergeGrid(tunnelLayer,
+            //gridResult = GridConverterAsync.MergeGrid(gridResult, cellWallLayer);
+            //gridResult = GridConverterAsync.GenerateConnections(gridResult);
+            var gridResult = GridConverter.MergeGrid(tunnelLayer,
                 cellLayer);
-            gridResult = GridProcessor.MergeGrid(gridResult, cellWallLayer);
-            gridResult = GridProcessor.GenerateConnections(gridResult);
+            gridResult = GridConverter.MergeGrid(gridResult, cellWallLayer);
+            //gridResult = GridConverter.GenerateConnections(gridResult);
+            gridResult = GridConverter.MergeGrid(gridResult, connectionLayer);
+            gridResult = GridConverter.VerifyConnections(gridResult);
+
 
             // Draw step
             Console.WriteLine("Drawing fifth step to image ...");

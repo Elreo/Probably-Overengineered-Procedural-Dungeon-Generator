@@ -9,9 +9,6 @@ using procedural_dungeon_generator.Common;
 using procedural_dungeon_generator.Components;
 using procedural_dungeon_generator.DelaunayTriangulation;
 using procedural_dungeon_generator.DelaunayTriangulation.Interfaces;
-using procedural_dungeon_generator.Algorithms.MinimumSpanningTree;
-using procedural_dungeon_generator.Algorithms.MinimumSpanningTree.KruskalsAlgorithm;
-using procedural_dungeon_generator.Algorithms.MinimumSpanningTree.PrimsAlgorithm;
 using procedural_dungeon_generator.Tunneler;
 
 namespace procedural_dungeon_generator.Generators {
@@ -122,21 +119,6 @@ namespace procedural_dungeon_generator.Generators {
         public List<Tunnel> GenerateTunnel() {
             // TODO: Finish this.
             return new CellWallDigger(cells).CreateSimpleTunnels();
-        }
-
-        /// <summary>
-        /// This method is used to reduce the amount of tunnels that exist and ensured that
-        /// every cell is connected with the tunnel. It uses Minimum Spanning Tree implementation.
-        /// There are multiple algorithm methods that can be used.
-        /// </summary>
-        public void MinimumSpanningTree(MSTSelection algorithm = MSTSelection.Kruskal) {
-            // TODO: Implement minimum spanning tree.
-            throw new NotImplementedException();
-            switch (algorithm) {
-                case MSTSelection.Kruskal: cells = new KruskalsMST(cells, GenerateTunnel()).GetProcessedCells(); break;
-                case MSTSelection.Prim: throw new NotImplementedException("Prim not yet implemented."); break;
-                default: throw new InvalidOperationException("Unknown algorithm.");
-            }
         }
 
         /// <summary>

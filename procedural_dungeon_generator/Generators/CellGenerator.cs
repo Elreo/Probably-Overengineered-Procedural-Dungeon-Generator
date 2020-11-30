@@ -16,6 +16,22 @@ namespace procedural_dungeon_generator.Generators {
             randomGenerator = new Random();
         }
 
+        private double BoxMullerMD(double mean, double std) {
+            // Reference: https://stackoverflow.com/a/218600
+            double u1 = 1.0 - randomGenerator.NextDouble();
+            double u2 = 1.0 - randomGenerator.NextDouble();
+            double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2);
+            return mean + std * randStdNormal;
+        }
+
+        private (double, double) BoxMullerMDBoth(double mean, double std) {
+            double u1 = 1.0 - randomGenerator.NextDouble();
+            double u2 = 1.0 - randomGenerator.NextDouble();
+            double randStdNormal1 = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2);
+            double randStdNormal2 = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Cos(2.0 * Math.PI * u2);
+            return (mean + std * randStdNormal1, mean + std * randStdNormal2);
+        }
+
         /// <summary>
         /// This is used to obtain random area inside of a circle.
         /// </summary>
@@ -24,24 +40,8 @@ namespace procedural_dungeon_generator.Generators {
             double t = 2 * Math.PI * randomGenerator.NextDouble();
             double u = randomGenerator.NextDouble() + randomGenerator.NextDouble();
             double r = (u > 1) ? 2 - u : u;
-            return new Point(Convert.ToInt32(radius * r * Math.Cos(t)), 
+            return new Point(Convert.ToInt32(radius * r * Math.Cos(t)),
                 Convert.ToInt32(radius * r * Math.Sin(t)));
-        }
-
-        /// <summary>
-        /// It generates a single random cell that can be used. The location is also
-        /// randomized as well.
-        /// </summary>
-        /// <param name="min">Minimum width/length</param>
-        /// <param name="max">Maximum width/length</param>
-        /// <returns>The resulting Cell type</returns>
-        public Cell GenerateCell(int min, int max, int radius) {
-            Cell output = GenerateCell(() => {
-                return new Point(randomGenerator.Next(min, max),
-                    randomGenerator.Next(min, max));
-            });
-            output.Location = GetRandomPointInCircle(radius);
-            return output;
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace procedural_dungeon_generator.Generators {
             List<Cell> output = new List<Cell>();
 
             for (int a = 0; a < amount; a++) {
-                double boxmuller = Utility.BoxMullerMD(mean, std);
+                double boxmuller = BoxMullerMD(mean, std);
                 if (boxmuller < 0.0) boxmuller *= -1;
                 // output.Add(GenerateCell((int)(min * boxmueller), (int)(max * boxmueller), radius));
                 // We can't use the one above since it didn't add the box muller 
@@ -73,19 +73,6 @@ namespace procedural_dungeon_generator.Generators {
             }
 
             return output;
-        }
-
-        /// <summary>
-        /// Use this function to generate a cell of your preference.
-        /// </summary>
-        /// <remarks>
-        /// This generates a cell, based from the information given in the function. It
-        /// uses the function to calculate the size.
-        /// </remarks>
-        /// <param name="function">Function that produces the point</param>
-        /// <returns></returns>
-        public Cell GenerateCell(Func<Point> function) {
-            return new Cell(function());
         }
     }
 }

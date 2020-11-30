@@ -62,15 +62,11 @@ namespace procedural_dungeon_generator.Components {
         public Cell(Point size) : 
             this(size, new Point(0, 0), 0) { }
 
-        public Cell(Point size, double sizeDeterminant) : 
-            this(size, new Point(0, 0), sizeDeterminant) { }
-
         public Cell(Point size, Point location) : 
             this(size, location, 0) { }
 
         public Cell(Point size, Point location, double sizeDeterminant) : 
             this(size, location, sizeDeterminant, 0) {
-            
         }
 
         public Cell(Point size, Point location, double sizeDeterminant, int illusionIncrement) {
@@ -122,6 +118,40 @@ namespace procedural_dungeon_generator.Components {
             other.X < Location.X + IllusionSize.X &&
             Location.Y <= other.Y &&
             other.Y < Location.Y + IllusionSize.Y;
+
+        /// <summary>
+        /// This implementation to get intersection with another line.
+        /// 
+        /// Reference: https://gamedev.stackexchange.com/questions/26004/how-to-detect-2d-line-on-line-collision
+        /// </summary>
+        /// <param name="linePointA"></param>
+        /// <param name="linePointB"></param>
+        /// <returns></returns>
+        public bool LineIntersection(Point linePointA, Point linePointB) {
+            Point LocationSize = Location + Size;
+
+            float denominator = ((LocationSize.X - Location.X) * (linePointB.Y - linePointA.Y)) -
+                ((LocationSize.Y - Location.Y) * (linePointB.X - linePointA.X));
+
+            float numerator1 = ((Location.Y - linePointA.Y) * (linePointB.X - linePointA.X)) -
+                ((Location.X - linePointA.X) * (linePointB.Y - linePointA.Y));
+
+            float numerator2 = ((Location.Y - linePointA.Y) * (LocationSize.X - Location.X)) -
+                ((Location.X - linePointA.X) * (LocationSize.Y - Location.Y));
+
+            if (denominator == 0) return numerator1 == 0 && numerator2 == 0;
+
+            float r = numerator1 / denominator;
+            float s = numerator2 / denominator;
+
+            bool result = (r >= 0 && r <= 1) && (s >= 0 && s <= 1);
+
+            if (result) return result;
+
+            // If it does not result true, check if the point ends juuuust right in the cell, but
+            // did not touch the collision line.
+            return CheckCollision(linePointA) || CheckCollision(linePointB);
+        }
 
         //public bool CheckCollision(Point other) {
         //return Location >= other && other <= (Location + Size);

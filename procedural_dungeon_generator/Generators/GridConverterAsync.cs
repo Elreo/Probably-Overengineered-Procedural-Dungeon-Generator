@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace procedural_dungeon_generator.Generators {
     /// <summary>
-    /// This class is used to turn those cells and tunnels into grids. WARNING: This particular
-    /// implementation is extremely slow. It's best to use the async version of it.
+    /// This class is used to turn those cells and tunnels into grids. This is the async version
+    /// of the grid converter.
     /// </summary>
-    public class GridProcessorAsync {
+    public class GridConverterAsync {
         public List<Cell> Cells { get; private set; }
         public List<Tunnel> Tunnels { get; private set; }
         public int Width { get; }
@@ -26,7 +26,7 @@ namespace procedural_dungeon_generator.Generators {
         /// <param name="t"></param>
         /// <param name="width">Width of the grid.</param>
         /// <param name="height">Height of the grid.</param>
-        public GridProcessorAsync(List<Cell> c, List<Tunnel> t, int width, int height) {
+        public GridConverterAsync(List<Cell> c, List<Tunnel> t, int width, int height) {
             Cells = c;
             Tunnels = t;
             Width = width;

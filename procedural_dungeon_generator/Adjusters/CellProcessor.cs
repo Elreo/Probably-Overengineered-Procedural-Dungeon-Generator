@@ -12,7 +12,7 @@ namespace procedural_dungeon_generator.Adjusters {
     /// This static class contains all assortments of static methods that can
     /// be used to adjust the position of cells.
     /// </summary>
-    public static class CellDistributor {
+    public static class CellProcessor {
 
         /// <summary>
         /// Check for intersection of the cells.
@@ -62,6 +62,7 @@ namespace procedural_dungeon_generator.Adjusters {
         /// This method separates all the cells from each other.
         /// 
         /// This method will throw "OutOfIterationException" when it has hit the iteration limit.
+        /// TODO: Credit
         /// </summary>
         /// <param name="input"></param>
         /// <param name="iterationLimit">This one is used to limit how many iterations it can go before throwing an error.</param>

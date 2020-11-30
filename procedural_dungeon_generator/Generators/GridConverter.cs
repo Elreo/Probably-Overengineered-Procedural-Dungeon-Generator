@@ -11,9 +11,7 @@ namespace procedural_dungeon_generator.Generators {
     /// This class is used to turn those cells and tunnels into grids. WARNING: This particular
     /// implementation is extremely slow. It's best to use the async version of it.
     /// </summary>
-    [Obsolete("The `GridProcessor` class is not async and very slow. " +
-        "If you are generating hundreds of tiles, please consider using the async version, `GridProcessorAsync`.")]
-    public class GridProcessor {
+    public class GridConverter {
         public List<Cell> Cells { get; private set; }
         public List<Tunnel> Tunnels { get; private set; }
         public int Width { get; }
@@ -27,12 +25,12 @@ namespace procedural_dungeon_generator.Generators {
         /// <param name="t"></param>
         /// <param name="width">Width of the grid.</param>
         /// <param name="height">Height of the grid.</param>
-        public GridProcessor(List<Cell> c, List<Tunnel> t, int width, int height) {
+        public GridConverter(List<Cell> c, List<Tunnel> t, int width, int height) {
             Cells = c;
             Tunnels = t;
             Width = width;
             Height = height;
-            NodeDivider = 4;
+            NodeDivider = 16;
 
             //throw new NotImplementedException();
         }
@@ -114,13 +112,86 @@ namespace procedural_dungeon_generator.Generators {
                         Cell blockCell = new Cell(blockSize, new Point(xCoord, yCoord));
 
                         // Iterate through path points.
+                        //foreach (Point point in tunnelPaths) {
+                        //    // Check for collision. If so, set the grid appropriately and break.
+                        //    if (blockCell.CheckCollision(point)) {
+                        //        output[x, y].Type = BlockType.Tunnel;
+                        //        break;
+                        //    }
+                        //}
+                        Point toBeRemoved = null;
                         foreach (Point point in tunnelPaths) {
                             // Check for collision. If so, set the grid appropriately and break.
                             if (blockCell.CheckCollision(point)) {
                                 output[x, y].Type = BlockType.Tunnel;
+                                toBeRemoved = point;
                                 break;
                             }
                         }
+                        tunnelPaths.Remove(toBeRemoved);
+                    }
+                }
+            }
+
+            return output;
+        }
+
+        /// <summary>
+        /// This one creates a tunnel layer, with given set of grid. However, this implementation is simple and
+        /// probably better used for straight horizontal or vertical line. It's faster, tho.
+        /// </summary>
+        /// <returns></returns>
+        public GridLayer CreateTunnelLayerSimple() {
+            GridLayer output = new GridLayer(Width, Height);
+
+            // Get the required increment
+            Point requiredIncrement = (GetLowestPoint() * new Point(-1, -1)) + new Point(2, 2);
+
+            // Get the highest point in the block
+            Point highestPoint = GetHighestPoint() + requiredIncrement;
+
+            // Get the size of the block
+            Point blockSize = new Point(highestPoint.X / Width, highestPoint.Y / Height);
+
+            // Iterate through the tunnel
+            foreach (Tunnel tunnel in Tunnels) {
+                // Get the first and end of the cells.
+                Point cellA = Cells.Single(obj => obj.GetHashCode() == tunnel.CellHashA).LocationCenter + requiredIncrement;
+                Point cellB = Cells.Single(obj => obj.GetHashCode() == tunnel.CellHashB).LocationCenter + requiredIncrement;
+
+                // Merge the points into one list
+                List<Point> points = new List<Point>();
+                points.Add(cellA);
+                if (tunnel.AnglePoint.Any()) {
+                    //points.AddRange(tunnel.AnglePoint);
+                    points.AddRange(tunnel.AnglePoint.Select((p) => {
+                        //return new Point(0, 0);
+
+                        // Adjust them to accomodate with the actual coordinate
+                        return p + requiredIncrement;
+                    }));
+                }
+                points.Add(cellB);
+
+                // NOTE: There will ALWAYS be more than one point in the area.
+
+                // And now iterate through the blocks and match them with the available points, from A to B.
+                for (int x = 0, xCoord = 0; x < Width && xCoord <= highestPoint.X; x++, xCoord += blockSize.X) {
+                    for (int y = 0, yCoord = 0; y < Height && yCoord <= highestPoint.Y; y++, yCoord += blockSize.Y) {
+                        // Make a temp cell to check for collision.
+                        Cell blockCell = new Cell(blockSize, new Point(xCoord, yCoord));
+
+                        // Iterate through the points to see if any of them matches. If so, assign.
+                        for (int iter = 0; iter < points.Count - 1; iter++) {
+
+                            // Check if it intersects with the temp cell.
+                            if (blockCell.LineIntersection(points[iter], points[iter + 1])) {
+                                // If so, assign them.
+                                output[x, y].Type = BlockType.Tunnel;
+                                break;
+                            }
+                        }
+
                     }
                 }
             }
@@ -177,6 +248,14 @@ namespace procedural_dungeon_generator.Generators {
                         Cell blockCell = new Cell(blockSize, new Point(xCoord, yCoord));
 
                         // Iterate through path points.
+                        //foreach (Point point in cellPaths) {
+                        //    // Check for collision. If so, set the grid appropriately and break.
+                        //    if (blockCell.CheckCollision(point)) {
+                        //        output[x, y].Type = BlockType.RoomWall;
+                        //        break;
+                        //    }
+                        //}
+                        Point toBeRemoved = null;
                         foreach (Point point in cellPaths) {
                             // Check for collision. If so, set the grid appropriately and break.
                             if (blockCell.CheckCollision(point)) {
@@ -184,8 +263,10 @@ namespace procedural_dungeon_generator.Generators {
                                 break;
                             }
                         }
+                        cellPaths.Remove(toBeRemoved);
                     }
                 }
+                //output = Points2Grid(cellPaths, highestPoint, blockSize, BlockType.RoomWall);
             }
 
             return output;
@@ -264,36 +345,102 @@ namespace procedural_dungeon_generator.Generators {
                     // Check its top block.
                     if (y > 0 && output[x, y].Type == BlockType.RoomWall && output[x, y - 1].Type == BlockType.Tunnel) {
                         // Make sure left and right side are not empty. If so, don't make the connection.
-                        if (x > 0 && x < grid.Width - 1 &&
-                                output[x - 1, y].Type != BlockType.Empty && output[x + 1, y].Type != BlockType.Empty) {
-                            output[x, y].Type = BlockType.RoomConnector;
-                        }
+                        //if (x > 0 && x < grid.Width - 1 &&
+                        //        output[x - 1, y].Type != BlockType.Empty && output[x + 1, y].Type != BlockType.Empty) {
+                        //    output[x, y].Type = BlockType.RoomConnector;
+                        //}
+                        output[x, y].Type = BlockType.RoomConnector;
                     }
 
                     // Check its left block.
                     if (x > 0 && output[x, y].Type == BlockType.RoomWall && output[x - 1, y].Type == BlockType.Tunnel) {
                         // Make sure top and bottom side are not empty. If so, don't make the connection.
-                        if (y > 0 && y < grid.Height - 1 &&
-                                output[x, y - 1].Type != BlockType.Empty && output[x, y + 1].Type != BlockType.Empty) {
-                            output[x, y].Type = BlockType.RoomConnector;
-                        }
+                        //if (y > 0 && y < grid.Height - 1 &&
+                        //        output[x, y - 1].Type != BlockType.Empty && output[x, y + 1].Type != BlockType.Empty) {
+                        //    output[x, y].Type = BlockType.RoomConnector;
+                        //}
+                        output[x, y].Type = BlockType.RoomConnector;
                     }
 
                     // Check for its right block.
                     if (x < grid.Width - 1 && output[x, y].Type == BlockType.RoomWall && output[x + 1, y].Type == BlockType.Tunnel) {
-                        if (y > 0 && y < grid.Height - 1 &&
-                                output[x, y - 1].Type != BlockType.Empty && output[x, y + 1].Type != BlockType.Empty) {
-                            output[x, y].Type = BlockType.RoomConnector;
-                        }
+                        //if (y > 0 && y < grid.Height - 1 &&
+                        //        output[x, y - 1].Type != BlockType.Empty && output[x, y + 1].Type != BlockType.Empty) {
+                        //    output[x, y].Type = BlockType.RoomConnector;
+                        //}
+                        output[x, y].Type = BlockType.RoomConnector;
                     }
 
                     // Check its bottom block.
                     if (y < grid.Height - 1 && output[x, y].Type == BlockType.RoomWall && output[x, y + 1].Type == BlockType.Tunnel) {
                         // Make sure left and right side are not empty. If so, don't make the connection.
-                        if (x > 0 && x < grid.Width - 1 &&
-                                output[x - 1, y].Type != BlockType.Empty && output[x + 1, y].Type != BlockType.Empty) {
-                            output[x, y].Type = BlockType.RoomConnector;
+                        //if (x > 0 && x < grid.Width - 1 &&
+                        //        output[x - 1, y].Type != BlockType.Empty && output[x + 1, y].Type != BlockType.Empty) {
+                        //    output[x, y].Type = BlockType.RoomConnector;
+                        //}
+                        output[x, y].Type = BlockType.RoomConnector;
+                    }
+                }
+            }
+
+            return output;
+        }
+
+        /// <summary>
+        /// This method is used to verify and clean up tunnels that lead to no connection at all.
+        /// Any connection that have no tunnel or inner room will be replaced with a wall.
+        /// 
+        /// Note: This particular function assumes that the connector is placed correctly within the
+        /// wall. For tunnel checking, it only verifies if it is connected to a tunnel.
+        /// </summary>
+        /// <param name="grid"></param>
+        /// <returns></returns>
+        public static GridLayer VerifyConnections(GridLayer grid) {
+            GridLayer output = grid;
+
+            for (int x = 0; x < output.Width; x++) {
+                for (int y = 0; y < output.Height; y++) {
+                    // Only look for connection
+                    if (output[x, y].Type == BlockType.RoomConnector) {
+                        // Check for nearby tunnel
+                        //right tunnel
+                        if (output[x + 1, y].Type == BlockType.Tunnel) {
+                            continue;
                         }
+                        // left tunnel
+                        if (output[x - 1, y].Type == BlockType.Tunnel) {
+                            continue;
+                        }
+                        // bottom tunnel
+                        if (output[x, y + 1].Type == BlockType.Tunnel) {
+                            continue;
+                        }
+                        // top tunnel
+                        if (output[x, y - 1].Type == BlockType.Tunnel) {
+                            continue;
+                        }
+
+                        // There are some occasional connections that leads to another room, but does not
+                        // have any tunnel. Here are the ones that checks them.
+                        // Left connection, right room
+                        if (output[x - 1, y].Type == BlockType.RoomConnector && output[x + 1, y].Type == BlockType.Room) {
+                            continue;
+                        }
+                        // Right connection, left room
+                        if (output[x + 1, y].Type == BlockType.RoomConnector && output[x - 1, y].Type == BlockType.Room) {
+                            continue;
+                        }
+                        // Top connection, bottom room
+                        if (output[x, y - 1].Type == BlockType.RoomConnector && output[x, y + 1].Type == BlockType.Room) {
+                            continue;
+                        }
+                        // Bottom connection, top room
+                        if (output[x, y + 1].Type == BlockType.RoomConnector && output[x, y - 1].Type == BlockType.Room) {
+                            continue;
+                        }
+
+                        // If none of them match, that means this particular block is invalid.
+                        output[x, y].Type = BlockType.RoomWall;
                     }
                 }
             }
@@ -321,6 +468,35 @@ namespace procedural_dungeon_generator.Generators {
                 for (int height = 0; height < output.Height; height++) {
                     if (secondGrid[width, height].Type != BlockType.Empty) {
                         output[width, height].Type = secondGrid[width, height].Type;
+                    }
+                }
+            }
+
+            return output;
+        }
+
+        /// <summary>
+        /// This function highlights blocks in a grid that intersects with each other.
+        /// </summary>
+        /// <param name="firstGrid"></param>
+        /// <param name="secondGrid"></param>
+        /// <returns></returns>
+        public static GridLayer IntersectGrid(GridLayer firstGrid, GridLayer secondGrid, BlockType highlight) {
+            // Check for their size.
+            if (firstGrid.Width != secondGrid.Width || firstGrid.Height != secondGrid.Height) {
+                throw new InvalidLayerSizeException(secondGrid.Width, secondGrid.Height,
+                    firstGrid.Width, firstGrid.Height);
+            }
+
+            // Create new grid with first grid as reference.
+            GridLayer output = new GridLayer(firstGrid.Width, firstGrid.Height);
+
+            // Start comparing them here
+            for (int width = 0; width < output.Width; width++) {
+                for (int height = 0; height < output.Height; height++) {
+                    if (firstGrid[width, height].Type != BlockType.Empty && 
+                            secondGrid[width, height].Type != BlockType.Empty) {
+                        output[width, height].Type = highlight;
                     }
                 }
             }

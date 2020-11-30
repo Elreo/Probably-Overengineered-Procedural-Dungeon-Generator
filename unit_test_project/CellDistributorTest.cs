@@ -16,11 +16,11 @@ namespace unit_test_project {
         public void FlockingSeparationTest1() {
             CellGenerator cellGenerator = new CellGenerator();
             List<Cell> cells = cellGenerator.GenerateCellList(150, 50, 250, 750);
-            //List<Cell> rearrangedCells = CellDistributor.FlockingSeparation(cells, cells.Count * 2);
+            //List<Cell> rearrangedCells = CellProcessor.FlockingSeparation(cells, cells.Count * 2);
             List<Cell> rearrangedCells = null;
             while (true) {
                 try {
-                    rearrangedCells = CellDistributor.FlockingSeparation(cells, cells.Count * 2);
+                    rearrangedCells = CellProcessor.FlockingSeparation(cells, cells.Count * 2);
                     break;
                 } catch (OutOfIterationException exception) {
                     Console.WriteLine("WARNING: Separation iteration has been exhausted. " +
