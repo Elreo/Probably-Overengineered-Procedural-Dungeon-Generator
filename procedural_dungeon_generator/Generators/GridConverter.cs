@@ -272,6 +272,60 @@ namespace procedural_dungeon_generator.Generators {
             return output;
         }
 
+        public GridLayer CreateCellWallLayerSimple() {
+            GridLayer output = new GridLayer(Width, Height);
+
+            // Calculate the required increment
+            Point requiredIncrement = (GetLowestPoint() * new Point(-1, -1)) + new Point(2, 2);
+
+            // Get highest point of the block.
+            Point highestPoint = GetHighestPoint() + requiredIncrement;
+
+            // Now we get the size of the blocks.
+            Point blockSize = new Point(highestPoint.X / Width, highestPoint.Y / Height);
+
+            // After getting the info, we can process the cells.
+            foreach (Cell cell in Cells) {
+                // Each cell has 4 points. We get all those 4 points.
+                Point topLeft = cell.Location + requiredIncrement;
+                Point topRight = new Point(cell.Location.X, cell.Location.Y + cell.Size.Y) + requiredIncrement;
+                Point bottomLeft = new Point(cell.Location.X + cell.Size.X, cell.Location.Y) + requiredIncrement;
+                Point bottomRight = cell.Location + cell.Size + requiredIncrement;
+
+                // Get them into a looping list of points that ends with its first iteration
+                List<Point> cellPaths = new List<Point>();
+                cellPaths.Add(topLeft);
+                cellPaths.Add(topRight);
+                cellPaths.Add(bottomRight);
+                cellPaths.Add(bottomLeft);
+                cellPaths.Add(topLeft);
+
+                // Now iterate through the blocks and match them from A to B
+                for (int x = 0, xCoord = 0; x < Width && xCoord <= highestPoint.X; x++, xCoord += blockSize.X) {
+                    for (int y = 0, yCoord = 0; y < Height && yCoord <= highestPoint.Y; y++, yCoord += blockSize.Y) {
+                        // Make a temp cell to check for collision.
+                        Cell blockCell = new Cell(blockSize, new Point(xCoord, yCoord));
+
+                        // Iterate through the points to see if any of them matches. If so, assign.
+                        for (int iter = 0; iter < cellPaths.Count - 1; iter++) {
+
+                            // Check if it intersects with the temp cell.
+                            if (blockCell.LineIntersection(cellPaths[iter], cellPaths[iter + 1])) {
+                                // If so, assign them.
+                                output[x, y].Type = BlockType.RoomWall;
+                                break;
+                            }
+                        }
+
+                    }
+                }
+
+
+            }
+
+            return output;
+        }
+
         public GridLayer CreateCellLayer() {
             GridLayer output = new GridLayer(Width, Height);
 

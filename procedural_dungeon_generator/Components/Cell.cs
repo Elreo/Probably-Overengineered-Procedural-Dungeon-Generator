@@ -130,19 +130,19 @@ namespace procedural_dungeon_generator.Components {
         public bool LineIntersection(Point linePointA, Point linePointB) {
             Point LocationSize = Location + Size;
 
-            float denominator = ((LocationSize.X - Location.X) * (linePointB.Y - linePointA.Y)) -
+            double denominator = ((LocationSize.X - Location.X) * (linePointB.Y - linePointA.Y)) -
                 ((LocationSize.Y - Location.Y) * (linePointB.X - linePointA.X));
 
-            float numerator1 = ((Location.Y - linePointA.Y) * (linePointB.X - linePointA.X)) -
+            double numerator1 = ((Location.Y - linePointA.Y) * (linePointB.X - linePointA.X)) -
                 ((Location.X - linePointA.X) * (linePointB.Y - linePointA.Y));
 
-            float numerator2 = ((Location.Y - linePointA.Y) * (LocationSize.X - Location.X)) -
+            double numerator2 = ((Location.Y - linePointA.Y) * (LocationSize.X - Location.X)) -
                 ((Location.X - linePointA.X) * (LocationSize.Y - Location.Y));
 
             if (denominator == 0) return numerator1 == 0 && numerator2 == 0;
 
-            float r = numerator1 / denominator;
-            float s = numerator2 / denominator;
+            double r = numerator1 / denominator;
+            double s = numerator2 / denominator;
 
             bool result = (r >= 0 && r <= 1) && (s >= 0 && s <= 1);
 

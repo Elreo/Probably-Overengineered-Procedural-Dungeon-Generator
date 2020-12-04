@@ -1,6 +1,8 @@
 ﻿# Probably Over-Engineered Procedural Dungeon Generator
 ~~This is an open-source implementation of a procedural dungeon generator used in TinyKeep game.~~ This procedural dungeon/level generator is inspired by the procedural dungeon generator used in TinyKeep game. The instructions are provided by **u/phidinh6** on Reddit. You can find the post [here](https://www.reddit.com/r/gamedev/comments/1dlwc4/procedural_dungeon_generation_algorithm_explained/).
 
+A game demo that implements this library to showcase it is hosted on itch.io, which you can access [here](https://very-small-dev.itch.io/exploration-game).
+
 # How does it work?
 the check mark indicates that it has been implemented. It works by going through several steps;
 1. - [x] **Generate Rooms.** This is the most basic step. The room must be randomly generated and coupled tight in a circle. This one uses [Box-Mueller transform](https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform).

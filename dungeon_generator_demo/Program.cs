@@ -333,6 +333,7 @@ namespace dungeon_generator_demo {
             //var tunnelLayer = gridProcessor.CreateTunnelLayer();
             var tunnelLayer = gridProcessor.CreateTunnelLayerSimple();
             var cellWallLayer = gridProcessor.CreateCellWallLayer();
+            //var cellWallLayer = gridProcessor.CreateCellWallLayerSimple();
             var cellLayer = gridProcessor.CreateCellLayer();
             var connectionLayer = GridConverter.IntersectGrid(tunnelLayer, cellWallLayer, 
                 procedural_dungeon_generator.Common.BlockType.RoomConnector);
